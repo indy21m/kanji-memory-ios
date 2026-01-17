@@ -14,8 +14,8 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    // Welcome Header
-                    WelcomeHeader()
+                    // Penguin Header
+                    PenguinHeader()
 
                     // Quick Stats
                     StatsCards()
@@ -32,23 +32,29 @@ struct HomeView: View {
                 .padding()
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Kanji Memory")
+            .navigationTitle("Penguin Sensei")
         }
     }
 }
 
-struct WelcomeHeader: View {
+struct PenguinHeader: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Welcome back!")
-                .font(.title2)
-                .fontWeight(.bold)
+        VStack(spacing: 12) {
+            Text("🐧")
+                .font(.system(size: 60))
 
-            Text("Ready to learn some kanji?")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 4) {
+                Text("Welcome back!")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text("Ready to master some kanji?")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
     }
 }
 
@@ -60,22 +66,25 @@ struct StatsCards: View {
             StatCard(
                 title: "Kanji",
                 value: "\(dataManager.allKanji.count)",
-                icon: "character.book.closed.fill",
-                color: .purple
+                icon: "漢",
+                color: .purple,
+                isEmoji: true
             )
 
             StatCard(
                 title: "Radicals",
                 value: "\(dataManager.allRadicals.count)",
-                icon: "square.grid.2x2.fill",
-                color: .blue
+                icon: "部",
+                color: .blue,
+                isEmoji: true
             )
 
             StatCard(
                 title: "Vocabulary",
                 value: "\(dataManager.allVocabulary.count)",
-                icon: "text.book.closed.fill",
-                color: .green
+                icon: "語",
+                color: .green,
+                isEmoji: true
             )
         }
     }
@@ -86,12 +95,19 @@ struct StatCard: View {
     let value: String
     let icon: String
     let color: Color
+    var isEmoji: Bool = false
 
     var body: some View {
         VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundStyle(color)
+            if isEmoji {
+                Text(icon)
+                    .font(.title2)
+                    .foregroundStyle(color)
+            } else {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(color)
+            }
 
             Text(value)
                 .font(.title3)
@@ -133,7 +149,7 @@ struct ReviewButton: View {
             .padding()
             .background(
                 LinearGradient(
-                    colors: [.purple, .indigo],
+                    colors: [.purple, .pink],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
@@ -149,14 +165,18 @@ struct CurrentLevelCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Level 1")
-                    .font(.headline)
+                HStack(spacing: 4) {
+                    Text("📚")
+                    Text("Level 1")
+                        .font(.headline)
+                }
 
                 Spacer()
 
                 NavigationLink(destination: LevelDetailView(level: 1)) {
                     Text("View All")
                         .font(.caption)
+                        .fontWeight(.medium)
                         .foregroundStyle(.purple)
                 }
             }
@@ -169,7 +189,13 @@ struct CurrentLevelCard: View {
                         Text(kanji.character)
                             .font(.title2)
                             .frame(width: 44, height: 44)
-                            .background(Color.purple.opacity(0.1))
+                            .background(
+                                LinearGradient(
+                                    colors: [.purple.opacity(0.2), .pink.opacity(0.1)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
@@ -187,16 +213,24 @@ struct CurrentLevelCard: View {
 struct RecentActivityCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Recent Activity")
-                .font(.headline)
+            HStack(spacing: 4) {
+                Text("📊")
+                Text("Recent Activity")
+                    .font(.headline)
+            }
 
             VStack(spacing: 8) {
-                Text("No recent activity")
+                Image(systemName: "sparkles")
+                    .font(.largeTitle)
+                    .foregroundStyle(.secondary.opacity(0.5))
+
+                Text("Start learning to see your progress!")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding()
+                    .multilineTextAlignment(.center)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
         }
         .padding()
         .background(

@@ -1,12 +1,37 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Style Data
+struct StyleOption: Identifiable {
+    let id: String
+    let label: String
+    let emoji: String
+    let description: String
+}
+
+let mnemonicStyles: [StyleOption] = [
+    StyleOption(id: "visual", label: "Visual Imagery", emoji: "🎨", description: "Vivid mental pictures and spatial associations"),
+    StyleOption(id: "story", label: "Story-based", emoji: "📚", description: "Memorable narratives with characters"),
+    StyleOption(id: "humor", label: "Funny & Absurd", emoji: "😄", description: "Humor and absurd scenarios"),
+    StyleOption(id: "personal", label: "Personal", emoji: "💭", description: "Relates to your experiences"),
+    StyleOption(id: "logical", label: "Etymology", emoji: "🧠", description: "Component meanings and origins"),
+    StyleOption(id: "cultural", label: "Cultural", emoji: "🏯", description: "Japanese culture and history")
+]
+
+let imageStyles: [StyleOption] = [
+    StyleOption(id: "minimalist", label: "Minimalist", emoji: "⭕", description: "Clean, simple designs"),
+    StyleOption(id: "realistic", label: "Realistic", emoji: "📸", description: "Photorealistic illustrations"),
+    StyleOption(id: "cartoon", label: "Cartoon/Anime", emoji: "🎌", description: "Manga-inspired artwork"),
+    StyleOption(id: "traditional", label: "Traditional", emoji: "🎋", description: "Ukiyo-e art style"),
+    StyleOption(id: "abstract", label: "Abstract", emoji: "🌈", description: "Modern, conceptual")
+]
+
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var userSettings: [UserSettings]
     @State private var wanikaniApiKey = ""
-    @State private var selectedMnemonicStyle: MnemonicStyle = .visual
-    @State private var selectedImageStyle: ImageStyle = .minimalist
+    @State private var selectedMnemonicStyle = "visual"
+    @State private var selectedImageStyle = "minimalist"
     @State private var personalInterests = ""
     @State private var showWaniKaniSync = false
     @State private var isSyncing = false
@@ -23,140 +48,370 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                // WaniKani section
-                Section {
-                    SecureField("API Key", text: $wanikaniApiKey)
-                        .textContentType(.password)
+            ScrollView {
+                VStack(spacing: 24) {
+                    // Header with penguin branding
+                    headerSection
 
-                    Button {
-                        syncWaniKani()
-                    } label: {
-                        HStack {
-                            Text("Sync with WaniKani")
-                            Spacer()
-                            if isSyncing {
-                                ProgressView()
-                            }
-                        }
-                    }
-                    .disabled(wanikaniApiKey.isEmpty || isSyncing)
-                } header: {
-                    Text("WaniKani")
-                } footer: {
-                    Text("Enter your WaniKani API key to sync your progress. Get it from wanikani.com/settings/personal_access_tokens")
+                    // WaniKani section
+                    wanikaniSection
+
+                    // Mnemonic Style section
+                    mnemonicStyleSection
+
+                    // Image Style section
+                    imageStyleSection
+
+                    // Personal Interests section
+                    interestsSection
+
+                    // Subscription section
+                    subscriptionSection
+
+                    // About section
+                    aboutSection
                 }
-
-                // AI Preferences section
-                Section("AI Preferences") {
-                    Picker("Mnemonic Style", selection: $selectedMnemonicStyle) {
-                        ForEach(MnemonicStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
-                        }
-                    }
-
-                    Picker("Image Style", selection: $selectedImageStyle) {
-                        ForEach(ImageStyle.allCases, id: \.self) { style in
-                            Text(style.displayName).tag(style)
-                        }
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Personal Interests")
-                            .font(.subheadline)
-                        TextField("e.g., anime, sports, music", text: $personalInterests)
-                            .textFieldStyle(.roundedBorder)
-                    }
-                    .padding(.vertical, 4)
-                }
-
-                // Subscription section
-                Section("Subscription") {
-                    HStack {
-                        Text("Current Plan")
-                        Spacer()
-                        Text(settings.subscriptionTier.rawValue.capitalized)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("AI Generations")
-                        Spacer()
-                        Text("\(settings.aiGenerationsUsed) / \(settings.subscriptionTier == .premium ? "∞" : "5")")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if settings.subscriptionTier == .free {
-                        Button("Upgrade to Premium") {
-                            // TODO: Show subscription options
-                        }
-                        .foregroundStyle(.purple)
-                    }
-                }
-
-                // Data section
-                Section("Data") {
-                    Button("Clear All Progress") {
-                        // TODO: Show confirmation
-                    }
-                    .foregroundStyle(.red)
-
-                    Button("Export Data") {
-                        // TODO: Export data
-                    }
-                }
-
-                // About section
-                Section("About") {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Link("Privacy Policy", destination: URL(string: "https://example.com/privacy")!)
-
-                    Link("Terms of Service", destination: URL(string: "https://example.com/terms")!)
-                }
+                .padding()
             }
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("Settings")
-            .onAppear {
-                loadSettings()
+            .onAppear { loadSettings() }
+        }
+    }
+
+    // MARK: - Header Section
+    private var headerSection: some View {
+        VStack(spacing: 8) {
+            Text("🐧")
+                .font(.system(size: 48))
+            Text("Penguin Sensei")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.purple, .pink],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+            Text("Your AI-powered kanji learning companion")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
+    }
+
+    // MARK: - WaniKani Section
+    private var wanikaniSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "WaniKani Integration", emoji: "🦀")
+
+            VStack(spacing: 12) {
+                SecureField("API Key", text: $wanikaniApiKey)
+                    .textFieldStyle(.roundedBorder)
+                    .textContentType(.password)
+
+                Button {
+                    syncWaniKani()
+                } label: {
+                    HStack {
+                        if isSyncing {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                        }
+                        Text(isSyncing ? "Syncing..." : "Sync Progress")
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(
+                        LinearGradient(
+                            colors: wanikaniApiKey.isEmpty ? [.gray] : [.purple, .pink],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .disabled(wanikaniApiKey.isEmpty || isSyncing)
+
+                Text("Get your API key from wanikani.com/settings")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
-            .onChange(of: selectedMnemonicStyle) { _, _ in saveSettings() }
-            .onChange(of: selectedImageStyle) { _, _ in saveSettings() }
-            .onChange(of: personalInterests) { _, _ in saveSettings() }
-            .onChange(of: wanikaniApiKey) { _, newValue in
-                settings.wanikaniApiKey = newValue
-                try? modelContext.save()
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+    }
+
+    // MARK: - Mnemonic Style Section
+    private var mnemonicStyleSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Mnemonic Style", emoji: "✨")
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(mnemonicStyles) { style in
+                    StyleCard(
+                        option: style,
+                        isSelected: selectedMnemonicStyle == style.id,
+                        accentColor: .purple
+                    ) {
+                        selectedMnemonicStyle = style.id
+                        saveSettings()
+                    }
+                }
             }
         }
     }
 
+    // MARK: - Image Style Section
+    private var imageStyleSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Image Style", emoji: "🖼️")
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                ForEach(imageStyles) { style in
+                    StyleCard(
+                        option: style,
+                        isSelected: selectedImageStyle == style.id,
+                        accentColor: .blue
+                    ) {
+                        selectedImageStyle = style.id
+                        saveSettings()
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Interests Section
+    private var interestsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Personal Interests", emoji: "💡")
+
+            VStack(alignment: .leading, spacing: 8) {
+                TextEditor(text: $personalInterests)
+                    .frame(height: 80)
+                    .padding(8)
+                    .background(Color(.secondarySystemGroupedBackground))
+                    .cornerRadius(10)
+                    .onChange(of: personalInterests) { _, _ in saveSettings() }
+
+                Text("Share your hobbies to get personalized mnemonics")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    // MARK: - Subscription Section
+    private var subscriptionSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Subscription", emoji: "⭐")
+
+            VStack(spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Current Plan")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Text(settings.subscriptionTier.rawValue.capitalized)
+                            .font(.headline)
+                    }
+                    Spacer()
+                    Text(settings.subscriptionTier == .premium ? "∞" : "5")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.purple, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                    Text("AI credits")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if settings.subscriptionTier == .free {
+                    Button {
+                        // TODO: Show subscription options
+                    } label: {
+                        HStack {
+                            Image(systemName: "sparkles")
+                            Text("Upgrade to Premium")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [.orange, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+    }
+
+    // MARK: - About Section
+    private var aboutSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "About", emoji: "ℹ️")
+
+            VStack(spacing: 0) {
+                aboutRow(title: "Version", value: "1.0.0")
+                Divider()
+                aboutLinkRow(title: "Privacy Policy", systemImage: "lock.shield")
+                Divider()
+                aboutLinkRow(title: "Terms of Service", systemImage: "doc.text")
+                Divider()
+
+                Button {
+                    // TODO: Clear data confirmation
+                } label: {
+                    HStack {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                        Text("Clear All Progress")
+                            .foregroundColor(.red)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.secondary)
+                    }
+                    .padding()
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+    }
+
+    // MARK: - Helper Views
+    private func sectionHeader(title: String, emoji: String) -> some View {
+        HStack(spacing: 8) {
+            Text(emoji)
+            Text(title)
+                .font(.headline)
+                .fontWeight(.semibold)
+        }
+    }
+
+    private func aboutRow(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(value)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+    }
+
+    private func aboutLinkRow(title: String, systemImage: String) -> some View {
+        Button {
+            // TODO: Open links
+        } label: {
+            HStack {
+                Image(systemName: systemImage)
+                    .foregroundColor(.purple)
+                Text(title)
+                    .foregroundColor(.primary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+        }
+    }
+
+    // MARK: - Functions
     private func loadSettings() {
         wanikaniApiKey = settings.wanikaniApiKey ?? ""
         let prefs = settings.aiPreferences
-        selectedMnemonicStyle = prefs.mnemonicStyle
-        selectedImageStyle = prefs.imageStyle
+        selectedMnemonicStyle = prefs.mnemonicStyle.rawValue
+        selectedImageStyle = prefs.imageStyle.rawValue
         personalInterests = prefs.personalInterests
     }
 
     private func saveSettings() {
-        settings.aiPreferences = AIPreferences(
-            mnemonicStyle: selectedMnemonicStyle,
-            imageStyle: selectedImageStyle,
-            personalInterests: personalInterests
-        )
-        try? modelContext.save()
+        if let mnemonicStyle = MnemonicStyle(rawValue: selectedMnemonicStyle),
+           let imageStyle = ImageStyle(rawValue: selectedImageStyle) {
+            settings.aiPreferences = AIPreferences(
+                mnemonicStyle: mnemonicStyle,
+                imageStyle: imageStyle,
+                personalInterests: personalInterests
+            )
+            try? modelContext.save()
+        }
     }
 
     private func syncWaniKani() {
         isSyncing = true
+        settings.wanikaniApiKey = wanikaniApiKey
+        try? modelContext.save()
         // TODO: Implement WaniKani sync
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             isSyncing = false
         }
+    }
+}
+
+// MARK: - Style Card
+struct StyleCard: View {
+    let option: StyleOption
+    let isSelected: Bool
+    let accentColor: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Text(option.emoji)
+                    .font(.title2)
+
+                Text(option.label)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .lineLimit(1)
+
+                Text(option.description)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? accentColor.opacity(0.15) : Color(.secondarySystemGroupedBackground))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? accentColor : Color.clear, lineWidth: 2)
+            )
+            .overlay(alignment: .topTrailing) {
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(accentColor)
+                        .padding(6)
+                }
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
 

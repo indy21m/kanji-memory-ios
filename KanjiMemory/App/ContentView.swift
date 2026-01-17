@@ -53,32 +53,46 @@ struct ContentView: View {
 }
 
 struct LoadingView: View {
-    @State private var rotation: Double = 0
+    @State private var isPulsing = false
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Animated kanji character
-            Text("漢")
+        VStack(spacing: 24) {
+            // Penguin logo with pulse animation
+            Text("🐧")
                 .font(.system(size: 80))
-                .rotationEffect(.degrees(rotation))
+                .scaleEffect(isPulsing ? 1.1 : 1.0)
                 .animation(
-                    .linear(duration: 2)
-                    .repeatForever(autoreverses: false),
-                    value: rotation
+                    .easeInOut(duration: 0.8)
+                    .repeatForever(autoreverses: true),
+                    value: isPulsing
                 )
-                .onAppear {
-                    rotation = 360
-                }
 
-            Text("Loading Kanji Data...")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 8) {
+                Text("Penguin Sensei")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.purple, .pink],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+
+                Text("Loading kanji data...")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             ProgressView()
                 .progressViewStyle(.circular)
+                .tint(.purple)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
+        .onAppear {
+            isPulsing = true
+        }
     }
 }
 
