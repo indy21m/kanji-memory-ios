@@ -13,11 +13,40 @@ struct KanjiDetailView: View {
         progressList.first { $0.character == kanji.character }
     }
 
+    private var isLearning: Bool {
+        progress?.nextReviewAt != nil
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
                 // Main character card
                 CharacterCard(character: kanji.character, meanings: kanji.meanings)
+
+                // Start Learning / Status section
+                if !isLearning {
+                    Button {
+                        startLearning()
+                    } label: {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Add to Reviews")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                colors: [.purple, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                } else if let progress = progress {
+                    LearningStatusView(progress: progress)
+                }
 
                 // Readings section
                 ReadingsSection(onyomi: kanji.onyomi, kunyomi: kanji.kunyomi)
@@ -72,15 +101,40 @@ struct KanjiDetailView: View {
             existing.mnemonic = mnemonic
             existing.updatedAt = Date()
         } else {
+            // Create new progress with nextReviewAt set to NOW so it appears in reviews immediately
             let newProgress = KanjiProgress(
                 character: kanji.character,
                 level: kanji.level,
                 mnemonic: mnemonic,
+                srsStage: .lesson,
+                nextReviewAt: Date(), // Make immediately reviewable
                 wanikaniId: kanji.wanikaniId
             )
             modelContext.insert(newProgress)
         }
         try? modelContext.save()
+    }
+
+    private func startLearning() {
+        if let existing = progress {
+            // If already exists but has no review date, set it now
+            if existing.nextReviewAt == nil {
+                existing.nextReviewAt = Date()
+                existing.updatedAt = Date()
+                try? modelContext.save()
+            }
+        } else {
+            // Create new progress
+            let newProgress = KanjiProgress(
+                character: kanji.character,
+                level: kanji.level,
+                srsStage: .lesson,
+                nextReviewAt: Date(),
+                wanikaniId: kanji.wanikaniId
+            )
+            modelContext.insert(newProgress)
+            try? modelContext.save()
+        }
     }
 }
 
@@ -276,6 +330,67 @@ struct ImagesSection: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+    }
+}
+
+struct LearningStatusView: View {
+    let progress: KanjiProgress
+
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Learning Status")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    SRSBadge(stage: progress.srs)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("Next Review")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(SRSCalculator.formatNextReview(date: progress.nextReviewAt))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(progress.nextReviewAt ?? Date() <= Date() ? .green : .primary)
+                }
+            }
+
+            if progress.timesReviewed > 0 {
+                Divider()
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("\(progress.timesReviewed)")
+                            .font(.headline)
+                        Text("Reviews")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing) {
+                        let accuracy = progress.timesReviewed > 0
+                            ? Int(Double(progress.timesCorrect) / Double(progress.timesReviewed) * 100)
+                            : 0
+                        Text("\(accuracy)%")
+                            .font(.headline)
+                            .foregroundStyle(accuracy >= 80 ? .green : accuracy >= 50 ? .orange : .red)
+                        Text("Accuracy")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
                 .fill(Color(.secondarySystemGroupedBackground))
         )
     }

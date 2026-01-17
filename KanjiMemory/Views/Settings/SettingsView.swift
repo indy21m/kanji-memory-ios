@@ -145,6 +145,15 @@ struct SettingsView: View {
             .padding()
             .background(Color(.secondarySystemGroupedBackground))
             .cornerRadius(16)
+            .alert("Sync Complete", isPresented: $showSyncResult) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                if let error = syncError {
+                    Text("Error: \(error)")
+                } else {
+                    Text("Synced \(syncedCount) new kanji from WaniKani")
+                }
+            }
         }
     }
 
@@ -357,13 +366,120 @@ struct SettingsView: View {
         }
     }
 
+    @State private var syncError: String?
+    @State private var syncedCount: Int = 0
+    @State private var showSyncResult = false
+
     private func syncWaniKani() {
         isSyncing = true
+        syncError = nil
+        syncedCount = 0
         settings.wanikaniApiKey = wanikaniApiKey
         try? modelContext.save()
-        // TODO: Implement WaniKani sync
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isSyncing = false
+
+        // Set the API key for the service
+        WaniKaniService.shared.setApiKey(wanikaniApiKey)
+
+        Task {
+            do {
+                // Fetch all kanji assignments from WaniKani
+                let assignments = try await WaniKaniService.shared.fetchAssignments(
+                    subjectTypes: ["kanji"]
+                )
+
+                // Process assignments on main thread for SwiftData
+                await MainActor.run {
+                    processWaniKaniAssignments(assignments)
+                    isSyncing = false
+                    showSyncResult = true
+                }
+            } catch {
+                await MainActor.run {
+                    syncError = error.localizedDescription
+                    isSyncing = false
+                    showSyncResult = true
+                }
+            }
+        }
+    }
+
+    private func processWaniKaniAssignments(_ assignments: [WaniKaniAssignmentData]) {
+        let dataManager = DataManager.shared
+
+        for assignment in assignments {
+            let info = assignment.data
+
+            // Find the kanji from bundled data by WaniKani subject ID
+            guard let kanji = dataManager.allKanji.first(where: { $0.wanikaniId == info.subjectId }) else {
+                continue
+            }
+
+            // Check if we already have progress for this kanji
+            let character = kanji.character
+            let existingProgress = try? modelContext.fetch(
+                FetchDescriptor<KanjiProgress>(
+                    predicate: #Predicate { $0.character == character }
+                )
+            ).first
+
+            // Convert WaniKani SRS stage to our SRSStage
+            let srsStage = convertWaniKaniSRS(info.srsStage)
+
+            // Parse the available_at date (next review date)
+            var nextReviewAt: Date? = nil
+            if let availableAtString = info.availableAt {
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                nextReviewAt = formatter.date(from: availableAtString)
+                // Try without fractional seconds if that fails
+                if nextReviewAt == nil {
+                    formatter.formatOptions = [.withInternetDateTime]
+                    nextReviewAt = formatter.date(from: availableAtString)
+                }
+            }
+
+            // If burned, no next review
+            if srsStage == .burned {
+                nextReviewAt = nil
+            }
+
+            if let existing = existingProgress {
+                // Update existing progress
+                existing.srs = srsStage
+                existing.nextReviewAt = nextReviewAt
+                existing.wanikaniId = info.subjectId
+                existing.updatedAt = Date()
+            } else {
+                // Create new progress
+                let newProgress = KanjiProgress(
+                    character: character,
+                    level: kanji.level,
+                    srsStage: srsStage,
+                    nextReviewAt: nextReviewAt,
+                    wanikaniId: info.subjectId
+                )
+                modelContext.insert(newProgress)
+                syncedCount += 1
+            }
+        }
+
+        try? modelContext.save()
+    }
+
+    private func convertWaniKaniSRS(_ stage: Int) -> SRSStage {
+        // WaniKani SRS stages: 0=Lesson, 1-4=Apprentice, 5-6=Guru, 7=Master, 8=Enlightened, 9=Burned
+        switch stage {
+        case 0: return .lesson
+        case 1: return .apprentice1
+        case 2: return .apprentice2
+        case 3: return .apprentice3
+        case 4: return .apprentice4
+        case 5: return .guru1
+        case 6: return .guru2
+        case 7: return .master
+        case 8: return .enlightened
+        case 9: return .burned
+        default: return .lesson
         }
     }
 }
