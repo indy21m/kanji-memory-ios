@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-01-17T13:50:20.766Z",
+  "counts": {
+    "kanji": 2083,
+    "radicals": 499,
+    "vocabulary": 6650
+  },
+  "levels": {
+    "min": 1,
+    "max": 60
+  },
+  "version": "1.0.0"
+}

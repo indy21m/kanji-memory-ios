@@ -1,0 +1,6604 @@
+{
+  "levels": {
+    "1": [
+      {
+        "id": 1,
+        "characters": "一",
+        "image": "ground",
+        "meanings": [
+          {
+            "meaning": "Ground",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "ground"
+      },
+      {
+        "id": 2,
+        "characters": "ハ",
+        "image": "fins",
+        "meanings": [
+          {
+            "meaning": "Fins",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "fins"
+      },
+      {
+        "id": 3,
+        "characters": "丶",
+        "image": "drop",
+        "meanings": [
+          {
+            "meaning": "Drop",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "drop"
+      },
+      {
+        "id": 4,
+        "characters": "七",
+        "image": "seven",
+        "meanings": [
+          {
+            "meaning": "Seven",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "seven"
+      },
+      {
+        "id": 5,
+        "characters": "丿",
+        "image": "slide",
+        "meanings": [
+          {
+            "meaning": "Slide",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "slide"
+      },
+      {
+        "id": 6,
+        "characters": "亅",
+        "image": "barb",
+        "meanings": [
+          {
+            "meaning": "Barb",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "barb"
+      },
+      {
+        "id": 7,
+        "characters": "二",
+        "image": "two",
+        "meanings": [
+          {
+            "meaning": "Two",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "two"
+      },
+      {
+        "id": 8,
+        "characters": "亠",
+        "image": "lid",
+        "meanings": [
+          {
+            "meaning": "Lid",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "lid"
+      },
+      {
+        "id": 9,
+        "characters": "人",
+        "image": "person",
+        "meanings": [
+          {
+            "meaning": "Person",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "person"
+      },
+      {
+        "id": 10,
+        "characters": "ト",
+        "image": "toe",
+        "meanings": [
+          {
+            "meaning": "Toe",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "toe"
+      },
+      {
+        "id": 11,
+        "characters": "九",
+        "image": "nine",
+        "meanings": [
+          {
+            "meaning": "Nine",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "nine"
+      },
+      {
+        "id": 12,
+        "characters": "入",
+        "image": "enter",
+        "meanings": [
+          {
+            "meaning": "Enter",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "enter"
+      },
+      {
+        "id": 13,
+        "characters": "力",
+        "image": "power",
+        "meanings": [
+          {
+            "meaning": "Power",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "power"
+      },
+      {
+        "id": 14,
+        "characters": "勹",
+        "image": "prison",
+        "meanings": [
+          {
+            "meaning": "Prison",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "prison"
+      },
+      {
+        "id": 15,
+        "characters": "十",
+        "image": "cross",
+        "meanings": [
+          {
+            "meaning": "Cross",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "cross"
+      },
+      {
+        "id": 16,
+        "characters": "口",
+        "image": "mouth",
+        "meanings": [
+          {
+            "meaning": "Mouth",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "mouth"
+      },
+      {
+        "id": 18,
+        "characters": "大",
+        "image": "big",
+        "meanings": [
+          {
+            "meaning": "Big",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "big"
+      },
+      {
+        "id": 19,
+        "characters": "女",
+        "image": "woman",
+        "meanings": [
+          {
+            "meaning": "Woman",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "woman"
+      },
+      {
+        "id": 20,
+        "characters": "山",
+        "image": "mountain",
+        "meanings": [
+          {
+            "meaning": "Mountain",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "mountain"
+      },
+      {
+        "id": 21,
+        "characters": "川",
+        "image": "river",
+        "meanings": [
+          {
+            "meaning": "River",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "river"
+      },
+      {
+        "id": 22,
+        "characters": "日",
+        "image": "sun",
+        "meanings": [
+          {
+            "meaning": "Sun",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "sun"
+      },
+      {
+        "id": 23,
+        "characters": "木",
+        "image": "tree",
+        "meanings": [
+          {
+            "meaning": "Tree",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "tree"
+      },
+      {
+        "id": 25,
+        "characters": "工",
+        "image": "construction",
+        "meanings": [
+          {
+            "meaning": "Construction",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "construction"
+      },
+      {
+        "id": 8761,
+        "characters": "丨",
+        "image": "stick",
+        "meanings": [
+          {
+            "meaning": "Stick",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "stick"
+      },
+      {
+        "id": 8762,
+        "characters": "𠂉",
+        "image": "gun",
+        "meanings": [
+          {
+            "meaning": "Gun",
+            "primary": true
+          }
+        ],
+        "level": 1,
+        "slug": "gun"
+      }
+    ],
+    "2": [
+      {
+        "id": 17,
+        "characters": "土",
+        "image": "dirt",
+        "meanings": [
+          {
+            "meaning": "Dirt",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "dirt"
+      },
+      {
+        "id": 24,
+        "characters": "刀",
+        "image": "sword",
+        "meanings": [
+          {
+            "meaning": "Sword",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "sword"
+      },
+      {
+        "id": 26,
+        "characters": "ナ",
+        "image": "narwhal",
+        "meanings": [
+          {
+            "meaning": "Narwhal",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "narwhal"
+      },
+      {
+        "id": 27,
+        "characters": "丁",
+        "image": "street",
+        "meanings": [
+          {
+            "meaning": "Street",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "street"
+      },
+      {
+        "id": 28,
+        "characters": "儿",
+        "image": "legs",
+        "meanings": [
+          {
+            "meaning": "Legs",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "legs"
+      },
+      {
+        "id": 29,
+        "characters": "冂",
+        "image": "head",
+        "meanings": [
+          {
+            "meaning": "Head",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "head"
+      },
+      {
+        "id": 31,
+        "characters": "メ",
+        "image": "treasure",
+        "meanings": [
+          {
+            "meaning": "Treasure",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "treasure"
+      },
+      {
+        "id": 32,
+        "characters": "千",
+        "image": "thousand",
+        "meanings": [
+          {
+            "meaning": "Thousand",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "thousand"
+      },
+      {
+        "id": 33,
+        "characters": "夕",
+        "image": "evening",
+        "meanings": [
+          {
+            "meaning": "Evening",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "evening"
+      },
+      {
+        "id": 34,
+        "characters": "子",
+        "image": "child",
+        "meanings": [
+          {
+            "meaning": "Child",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "child"
+      },
+      {
+        "id": 35,
+        "characters": "小",
+        "image": "small",
+        "meanings": [
+          {
+            "meaning": "Small",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "small"
+      },
+      {
+        "id": 36,
+        "characters": "弓",
+        "image": "bow",
+        "meanings": [
+          {
+            "meaning": "Bow",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "bow"
+      },
+      {
+        "id": 37,
+        "characters": "尸",
+        "image": "flag",
+        "meanings": [
+          {
+            "meaning": "Flag",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "flag"
+      },
+      {
+        "id": 38,
+        "characters": "彡",
+        "image": "hair",
+        "meanings": [
+          {
+            "meaning": "Hair",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "hair"
+      },
+      {
+        "id": 39,
+        "characters": "五",
+        "image": "five",
+        "meanings": [
+          {
+            "meaning": "Five",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "five"
+      },
+      {
+        "id": 40,
+        "characters": "天",
+        "image": "heaven",
+        "meanings": [
+          {
+            "meaning": "Heaven",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "heaven"
+      },
+      {
+        "id": 41,
+        "characters": "手",
+        "image": "hand",
+        "meanings": [
+          {
+            "meaning": "Hand",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "hand"
+      },
+      {
+        "id": 42,
+        "characters": "文",
+        "image": "writing",
+        "meanings": [
+          {
+            "meaning": "Writing",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "writing"
+      },
+      {
+        "id": 43,
+        "characters": "月",
+        "image": "moon",
+        "meanings": [
+          {
+            "meaning": "Moon",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "moon"
+      },
+      {
+        "id": 44,
+        "characters": "止",
+        "image": "stop",
+        "meanings": [
+          {
+            "meaning": "Stop",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "stop"
+      },
+      {
+        "id": 45,
+        "characters": "水",
+        "image": "water",
+        "meanings": [
+          {
+            "meaning": "Water",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "water"
+      },
+      {
+        "id": 46,
+        "characters": "火",
+        "image": "fire",
+        "meanings": [
+          {
+            "meaning": "Fire",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "fire"
+      },
+      {
+        "id": 47,
+        "characters": "犬",
+        "image": "dog",
+        "meanings": [
+          {
+            "meaning": "Dog",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "dog"
+      },
+      {
+        "id": 48,
+        "characters": "王",
+        "image": "king",
+        "meanings": [
+          {
+            "meaning": "King",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "king"
+      },
+      {
+        "id": 49,
+        "characters": "中",
+        "image": "middle",
+        "meanings": [
+          {
+            "meaning": "Middle",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "middle"
+      },
+      {
+        "id": 50,
+        "characters": "本",
+        "image": "book",
+        "meanings": [
+          {
+            "meaning": "Book",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "book"
+      },
+      {
+        "id": 51,
+        "characters": "田",
+        "image": "rice-paddy",
+        "meanings": [
+          {
+            "meaning": "Rice Paddy",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "rice-paddy"
+      },
+      {
+        "id": 52,
+        "characters": "白",
+        "image": "white",
+        "meanings": [
+          {
+            "meaning": "White",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "white"
+      },
+      {
+        "id": 53,
+        "characters": "目",
+        "image": "eye",
+        "meanings": [
+          {
+            "meaning": "Eye",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "eye"
+      },
+      {
+        "id": 55,
+        "characters": "立",
+        "image": "stand",
+        "meanings": [
+          {
+            "meaning": "Stand",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "stand"
+      },
+      {
+        "id": 126,
+        "characters": "牛",
+        "image": "cow",
+        "meanings": [
+          {
+            "meaning": "Cow",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "cow"
+      },
+      {
+        "id": 140,
+        "characters": "ム",
+        "image": "private",
+        "meanings": [
+          {
+            "meaning": "Private",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "private"
+      },
+      {
+        "id": 8763,
+        "characters": "丆",
+        "image": "leaf",
+        "meanings": [
+          {
+            "meaning": "Leaf",
+            "primary": true
+          }
+        ],
+        "level": 2,
+        "slug": "leaf"
+      }
+    ],
+    "3": [
+      {
+        "id": 30,
+        "characters": "又",
+        "image": "stool",
+        "meanings": [
+          {
+            "meaning": "Stool",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "stool"
+      },
+      {
+        "id": 54,
+        "characters": "石",
+        "image": "stone",
+        "meanings": [
+          {
+            "meaning": "Stone",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "stone"
+      },
+      {
+        "id": 57,
+        "characters": "匕",
+        "image": "spoon",
+        "meanings": [
+          {
+            "meaning": "Spoon",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "spoon"
+      },
+      {
+        "id": 58,
+        "characters": "ラ",
+        "image": "ra-58",
+        "meanings": [
+          {
+            "meaning": "Ra",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "ra-58"
+      },
+      {
+        "id": 59,
+        "characters": "久",
+        "image": "raptor-cage-59",
+        "meanings": [
+          {
+            "meaning": "Raptor Cage",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "raptor-cage-59"
+      },
+      {
+        "id": 60,
+        "characters": "夂",
+        "image": "winter",
+        "meanings": [
+          {
+            "meaning": "Winter",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "winter"
+      },
+      {
+        "id": 61,
+        "characters": "干",
+        "image": "dry",
+        "meanings": [
+          {
+            "meaning": "Dry",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "dry"
+      },
+      {
+        "id": 62,
+        "characters": "广",
+        "image": "canopy",
+        "meanings": [
+          {
+            "meaning": "Canopy",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "canopy"
+      },
+      {
+        "id": 63,
+        "characters": "扌",
+        "image": "fingers",
+        "meanings": [
+          {
+            "meaning": "Fingers",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "fingers"
+      },
+      {
+        "id": 65,
+        "characters": "心",
+        "image": "heart",
+        "meanings": [
+          {
+            "meaning": "Heart",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "heart"
+      },
+      {
+        "id": 66,
+        "characters": "方",
+        "image": "direction",
+        "meanings": [
+          {
+            "meaning": "Direction",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "direction"
+      },
+      {
+        "id": 67,
+        "characters": "毛",
+        "image": "fur",
+        "meanings": [
+          {
+            "meaning": "Fur",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "fur"
+      },
+      {
+        "id": 68,
+        "characters": "父",
+        "image": "father",
+        "meanings": [
+          {
+            "meaning": "Father",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "father"
+      },
+      {
+        "id": 69,
+        "characters": "古",
+        "image": "old",
+        "meanings": [
+          {
+            "meaning": "Old",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "old"
+      },
+      {
+        "id": 70,
+        "characters": "母",
+        "image": "drawer-70",
+        "meanings": [
+          {
+            "meaning": "Drawer",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "drawer-70"
+      },
+      {
+        "id": 71,
+        "characters": "用",
+        "image": "task",
+        "meanings": [
+          {
+            "meaning": "Task",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "task"
+      },
+      {
+        "id": 72,
+        "characters": "矢",
+        "image": "arrow",
+        "meanings": [
+          {
+            "meaning": "Arrow",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "arrow"
+      },
+      {
+        "id": 73,
+        "characters": "戸",
+        "image": "door",
+        "meanings": [
+          {
+            "meaning": "Door",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "door"
+      },
+      {
+        "id": 78,
+        "characters": "宀",
+        "image": "roof",
+        "meanings": [
+          {
+            "meaning": "Roof",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "roof"
+      },
+      {
+        "id": 87,
+        "characters": "幺",
+        "image": "poop",
+        "meanings": [
+          {
+            "meaning": "Poop",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "poop"
+      },
+      {
+        "id": 102,
+        "characters": "巾",
+        "image": "towel",
+        "meanings": [
+          {
+            "meaning": "Towel",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "towel"
+      },
+      {
+        "id": 107,
+        "characters": "毋",
+        "image": "window",
+        "meanings": [
+          {
+            "meaning": "Window",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "window"
+      },
+      {
+        "id": 123,
+        "characters": "冫",
+        "image": "ice",
+        "meanings": [
+          {
+            "meaning": "Ice",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "ice"
+      },
+      {
+        "id": 210,
+        "characters": "生",
+        "image": "life",
+        "meanings": [
+          {
+            "meaning": "Life",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "life"
+      },
+      {
+        "id": 238,
+        "characters": "今",
+        "image": "now",
+        "meanings": [
+          {
+            "meaning": "Now",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "now"
+      },
+      {
+        "id": 8764,
+        "characters": "𠆢",
+        "image": "hat",
+        "meanings": [
+          {
+            "meaning": "Hat",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "hat"
+      },
+      {
+        "id": 8765,
+        "characters": "⺌",
+        "image": "triceratops",
+        "meanings": [
+          {
+            "meaning": "Triceratops",
+            "primary": true
+          }
+        ],
+        "level": 3,
+        "slug": "triceratops"
+      }
+    ],
+    "4": [
+      {
+        "id": 64,
+        "characters": "元",
+        "image": "origin",
+        "meanings": [
+          {
+            "meaning": "Origin",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "origin"
+      },
+      {
+        "id": 74,
+        "characters": "寸",
+        "image": "measurement",
+        "meanings": [
+          {
+            "meaning": "Measurement",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "measurement"
+      },
+      {
+        "id": 75,
+        "characters": "ｲ",
+        "image": "leader",
+        "meanings": [
+          {
+            "meaning": "Leader",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "leader"
+      },
+      {
+        "id": 76,
+        "characters": "冖",
+        "image": "forehead",
+        "meanings": [
+          {
+            "meaning": "Forehead",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "forehead"
+      },
+      {
+        "id": 77,
+        "characters": "也",
+        "image": "alligator",
+        "meanings": [
+          {
+            "meaning": "Alligator",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "alligator"
+      },
+      {
+        "id": 79,
+        "characters": "弋",
+        "image": "ceremony",
+        "meanings": [
+          {
+            "meaning": "Ceremony",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "ceremony"
+      },
+      {
+        "id": 80,
+        "characters": "ネ",
+        "image": "spirit",
+        "meanings": [
+          {
+            "meaning": "Spirit",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "spirit"
+      },
+      {
+        "id": 81,
+        "characters": "支",
+        "image": "branch",
+        "meanings": [
+          {
+            "meaning": "Branch",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "branch"
+      },
+      {
+        "id": 82,
+        "characters": "气",
+        "image": "energy",
+        "meanings": [
+          {
+            "meaning": "Energy",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "energy"
+      },
+      {
+        "id": 83,
+        "characters": "世",
+        "image": "world",
+        "meanings": [
+          {
+            "meaning": "World",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "world"
+      },
+      {
+        "id": 84,
+        "characters": "皿",
+        "image": "plate",
+        "meanings": [
+          {
+            "meaning": "Plate",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "plate"
+      },
+      {
+        "id": 85,
+        "characters": "竹",
+        "image": "bamboo",
+        "meanings": [
+          {
+            "meaning": "Bamboo",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "bamboo"
+      },
+      {
+        "id": 86,
+        "characters": "糸",
+        "image": "thread",
+        "meanings": [
+          {
+            "meaning": "Thread",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "thread"
+      },
+      {
+        "id": 88,
+        "characters": "耳",
+        "image": "ear",
+        "meanings": [
+          {
+            "meaning": "Ear",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "ear"
+      },
+      {
+        "id": 89,
+        "characters": "虫",
+        "image": "insect",
+        "meanings": [
+          {
+            "meaning": "Insect",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "insect"
+      },
+      {
+        "id": 90,
+        "characters": "艹",
+        "image": "flowers",
+        "meanings": [
+          {
+            "meaning": "Flowers",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "flowers"
+      },
+      {
+        "id": 91,
+        "characters": "見",
+        "image": "see",
+        "meanings": [
+          {
+            "meaning": "See",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "see"
+      },
+      {
+        "id": 92,
+        "characters": "赤",
+        "image": "red",
+        "meanings": [
+          {
+            "meaning": "Red",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "red"
+      },
+      {
+        "id": 93,
+        "characters": "車",
+        "image": "car",
+        "meanings": [
+          {
+            "meaning": "Car",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "car"
+      },
+      {
+        "id": 94,
+        "characters": "貝",
+        "image": "shellfish",
+        "meanings": [
+          {
+            "meaning": "Shellfish",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "shellfish"
+      },
+      {
+        "id": 95,
+        "characters": "足",
+        "image": "foot",
+        "meanings": [
+          {
+            "meaning": "Foot",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "foot"
+      },
+      {
+        "id": 96,
+        "characters": "不",
+        "image": "not",
+        "meanings": [
+          {
+            "meaning": "Not",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "not"
+      },
+      {
+        "id": 97,
+        "characters": "士",
+        "image": "samurai",
+        "meanings": [
+          {
+            "meaning": "Samurai",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "samurai"
+      },
+      {
+        "id": 98,
+        "characters": "米",
+        "image": "rice",
+        "meanings": [
+          {
+            "meaning": "Rice",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "rice"
+      },
+      {
+        "id": 99,
+        "characters": "彳",
+        "image": "loiter",
+        "meanings": [
+          {
+            "meaning": "Loiter",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "loiter"
+      },
+      {
+        "id": 100,
+        "characters": "巴",
+        "image": "bed",
+        "meanings": [
+          {
+            "meaning": "Bed",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "bed"
+      },
+      {
+        "id": 101,
+        "characters": "兀",
+        "image": "pi",
+        "meanings": [
+          {
+            "meaning": "Pi",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "pi"
+      },
+      {
+        "id": 116,
+        "characters": "厂",
+        "image": "cliff",
+        "meanings": [
+          {
+            "meaning": "Cliff",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "cliff"
+      },
+      {
+        "id": 154,
+        "characters": "主",
+        "image": "master",
+        "meanings": [
+          {
+            "meaning": "Master",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "master"
+      },
+      {
+        "id": 170,
+        "characters": "穴",
+        "image": "hole",
+        "meanings": [
+          {
+            "meaning": "Hole",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "hole"
+      },
+      {
+        "id": 211,
+        "characters": "乚",
+        "image": "umbrella",
+        "meanings": [
+          {
+            "meaning": "Umbrella",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "umbrella"
+      },
+      {
+        "id": 231,
+        "characters": "央",
+        "image": "center",
+        "meanings": [
+          {
+            "meaning": "Center",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "center"
+      },
+      {
+        "id": 243,
+        "characters": "男",
+        "image": "man",
+        "meanings": [
+          {
+            "meaning": "Man",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "man"
+      },
+      {
+        "id": 8766,
+        "characters": null,
+        "image": "beggar",
+        "meanings": [
+          {
+            "meaning": "Beggar",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "beggar"
+      },
+      {
+        "id": 8767,
+        "characters": "丷",
+        "image": "horns",
+        "meanings": [
+          {
+            "meaning": "Horns",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "horns"
+      },
+      {
+        "id": 8768,
+        "characters": "业",
+        "image": "spikes",
+        "meanings": [
+          {
+            "meaning": "Spikes",
+            "primary": true
+          }
+        ],
+        "level": 4,
+        "slug": "spikes"
+      }
+    ],
+    "5": [
+      {
+        "id": 103,
+        "characters": "氵",
+        "image": "tsunami",
+        "meanings": [
+          {
+            "meaning": "Tsunami",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "tsunami"
+      },
+      {
+        "id": 104,
+        "characters": "耂",
+        "image": "coffin",
+        "meanings": [
+          {
+            "meaning": "Coffin",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "coffin"
+      },
+      {
+        "id": 105,
+        "characters": "ヨ",
+        "image": "wolverine",
+        "meanings": [
+          {
+            "meaning": "Wolverine",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "wolverine"
+      },
+      {
+        "id": 106,
+        "characters": "廾",
+        "image": "twenty",
+        "meanings": [
+          {
+            "meaning": "Twenty",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "twenty"
+      },
+      {
+        "id": 108,
+        "characters": "肉",
+        "image": "meat",
+        "meanings": [
+          {
+            "meaning": "Meat",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "meat"
+      },
+      {
+        "id": 109,
+        "characters": "自",
+        "image": "self",
+        "meanings": [
+          {
+            "meaning": "Self",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "self"
+      },
+      {
+        "id": 110,
+        "characters": "色",
+        "image": "color",
+        "meanings": [
+          {
+            "meaning": "Color",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "color"
+      },
+      {
+        "id": 111,
+        "characters": "行",
+        "image": "go",
+        "meanings": [
+          {
+            "meaning": "Go",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "go"
+      },
+      {
+        "id": 112,
+        "characters": "西",
+        "image": "west",
+        "meanings": [
+          {
+            "meaning": "West",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "west"
+      },
+      {
+        "id": 113,
+        "characters": "可",
+        "image": "lip-ring",
+        "meanings": [
+          {
+            "meaning": "Lip Ring",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "lip-ring"
+      },
+      {
+        "id": 114,
+        "characters": "⻌",
+        "image": "scooter",
+        "meanings": [
+          {
+            "meaning": "Scooter",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "scooter"
+      },
+      {
+        "id": 115,
+        "characters": "斤",
+        "image": "axe",
+        "meanings": [
+          {
+            "meaning": "Axe",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "axe"
+      },
+      {
+        "id": 117,
+        "characters": "言",
+        "image": "say",
+        "meanings": [
+          {
+            "meaning": "Say",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "say"
+      },
+      {
+        "id": 118,
+        "characters": "金",
+        "image": "gold",
+        "meanings": [
+          {
+            "meaning": "Gold",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "gold"
+      },
+      {
+        "id": 119,
+        "characters": "雨",
+        "image": "rain",
+        "meanings": [
+          {
+            "meaning": "Rain",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "rain"
+      },
+      {
+        "id": 120,
+        "characters": "青",
+        "image": "blue",
+        "meanings": [
+          {
+            "meaning": "Blue",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "blue"
+      },
+      {
+        "id": 121,
+        "characters": "冋",
+        "image": "mustache",
+        "meanings": [
+          {
+            "meaning": "Mustache",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "mustache"
+      },
+      {
+        "id": 122,
+        "characters": "乍",
+        "image": "key",
+        "meanings": [
+          {
+            "meaning": "Key",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "key"
+      },
+      {
+        "id": 124,
+        "characters": "走",
+        "image": "run",
+        "meanings": [
+          {
+            "meaning": "Run",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "run"
+      },
+      {
+        "id": 125,
+        "characters": "里",
+        "image": "village",
+        "meanings": [
+          {
+            "meaning": "Village",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "village"
+      },
+      {
+        "id": 155,
+        "characters": "会",
+        "image": "meet",
+        "meanings": [
+          {
+            "meaning": "Meet",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "meet"
+      },
+      {
+        "id": 171,
+        "characters": "开",
+        "image": "lantern",
+        "meanings": [
+          {
+            "meaning": "Lantern",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "lantern"
+      },
+      {
+        "id": 213,
+        "characters": "羽",
+        "image": "feathers",
+        "meanings": [
+          {
+            "meaning": "Feathers",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "feathers"
+      },
+      {
+        "id": 233,
+        "characters": "豕",
+        "image": "pig",
+        "meanings": [
+          {
+            "meaning": "Pig",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "pig"
+      },
+      {
+        "id": 281,
+        "characters": "角",
+        "image": "angle",
+        "meanings": [
+          {
+            "meaning": "Angle",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "angle"
+      },
+      {
+        "id": 8769,
+        "characters": "龸",
+        "image": "viking",
+        "meanings": [
+          {
+            "meaning": "Viking",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "viking"
+      },
+      {
+        "id": 8770,
+        "characters": null,
+        "image": "kick",
+        "meanings": [
+          {
+            "meaning": "Kick",
+            "primary": true
+          }
+        ],
+        "level": 5,
+        "slug": "kick"
+      }
+    ],
+    "6": [
+      {
+        "id": 56,
+        "characters": "L",
+        "image": "lion",
+        "meanings": [
+          {
+            "meaning": "Lion",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "lion"
+      },
+      {
+        "id": 128,
+        "characters": "刂",
+        "image": "knife",
+        "meanings": [
+          {
+            "meaning": "Knife",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "knife"
+      },
+      {
+        "id": 129,
+        "characters": "斗",
+        "image": "ladle",
+        "meanings": [
+          {
+            "meaning": "Ladle",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "ladle"
+      },
+      {
+        "id": 130,
+        "characters": "ホ",
+        "image": "angel",
+        "meanings": [
+          {
+            "meaning": "Angel",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "angel"
+      },
+      {
+        "id": 131,
+        "characters": "灬",
+        "image": "boil",
+        "meanings": [
+          {
+            "meaning": "Boil",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "boil"
+      },
+      {
+        "id": 132,
+        "characters": "歹",
+        "image": "yakuza",
+        "meanings": [
+          {
+            "meaning": "Yakuza",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "yakuza"
+      },
+      {
+        "id": 133,
+        "characters": "向",
+        "image": "cyclops-133",
+        "meanings": [
+          {
+            "meaning": "Cyclops",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "cyclops-133"
+      },
+      {
+        "id": 134,
+        "characters": "未",
+        "image": "jet",
+        "meanings": [
+          {
+            "meaning": "Jet",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "jet"
+      },
+      {
+        "id": 135,
+        "characters": "禾",
+        "image": "grain",
+        "meanings": [
+          {
+            "meaning": "Grain",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "grain"
+      },
+      {
+        "id": 136,
+        "characters": "羊",
+        "image": "sheep",
+        "meanings": [
+          {
+            "meaning": "Sheep",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "sheep"
+      },
+      {
+        "id": 137,
+        "characters": "血",
+        "image": "blood",
+        "meanings": [
+          {
+            "meaning": "Blood",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "blood"
+      },
+      {
+        "id": 138,
+        "characters": "長",
+        "image": "long",
+        "meanings": [
+          {
+            "meaning": "Long",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "long"
+      },
+      {
+        "id": 139,
+        "characters": "食",
+        "image": "eat",
+        "meanings": [
+          {
+            "meaning": "Eat",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "eat"
+      },
+      {
+        "id": 141,
+        "characters": "マ",
+        "image": "mama",
+        "meanings": [
+          {
+            "meaning": "Mama",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "mama"
+      },
+      {
+        "id": 143,
+        "characters": "占",
+        "image": "fortune",
+        "meanings": [
+          {
+            "meaning": "Fortune",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "fortune"
+      },
+      {
+        "id": 156,
+        "characters": "首",
+        "image": "neck",
+        "meanings": [
+          {
+            "meaning": "Neck",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "neck"
+      },
+      {
+        "id": 174,
+        "characters": "舌",
+        "image": "tongue",
+        "meanings": [
+          {
+            "meaning": "Tongue",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "tongue"
+      },
+      {
+        "id": 212,
+        "characters": "亡",
+        "image": "death",
+        "meanings": [
+          {
+            "meaning": "Death",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "death"
+      },
+      {
+        "id": 267,
+        "characters": "市",
+        "image": "city",
+        "meanings": [
+          {
+            "meaning": "City",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "city"
+      },
+      {
+        "id": 398,
+        "characters": "家",
+        "image": "house",
+        "meanings": [
+          {
+            "meaning": "House",
+            "primary": true
+          }
+        ],
+        "level": 6,
+        "slug": "house"
+      }
+    ],
+    "7": [
+      {
+        "id": 127,
+        "characters": "凵",
+        "image": "box",
+        "meanings": [
+          {
+            "meaning": "Box",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "box"
+      },
+      {
+        "id": 142,
+        "characters": "欠",
+        "image": "lack",
+        "meanings": [
+          {
+            "meaning": "Lack",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "lack"
+      },
+      {
+        "id": 145,
+        "characters": "卩",
+        "image": "stamp",
+        "meanings": [
+          {
+            "meaning": "Stamp",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "stamp"
+      },
+      {
+        "id": 146,
+        "characters": "夫",
+        "image": "husband",
+        "meanings": [
+          {
+            "meaning": "Husband",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "husband"
+      },
+      {
+        "id": 147,
+        "characters": "氏",
+        "image": "clan",
+        "meanings": [
+          {
+            "meaning": "Clan",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "clan"
+      },
+      {
+        "id": 149,
+        "characters": "舟",
+        "image": "boat",
+        "meanings": [
+          {
+            "meaning": "Boat",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "boat"
+      },
+      {
+        "id": 150,
+        "characters": "魚",
+        "image": "fish",
+        "meanings": [
+          {
+            "meaning": "Fish",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "fish"
+      },
+      {
+        "id": 151,
+        "characters": "鳥",
+        "image": "bird",
+        "meanings": [
+          {
+            "meaning": "Bird",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "bird"
+      },
+      {
+        "id": 152,
+        "characters": "黄",
+        "image": "yellow",
+        "meanings": [
+          {
+            "meaning": "Yellow",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "yellow"
+      },
+      {
+        "id": 153,
+        "characters": "黒",
+        "image": "black",
+        "meanings": [
+          {
+            "meaning": "Black",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "black"
+      },
+      {
+        "id": 169,
+        "characters": "周",
+        "image": "circumference",
+        "meanings": [
+          {
+            "meaning": "Circumference",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "circumference"
+      },
+      {
+        "id": 173,
+        "characters": "勿",
+        "image": "wing",
+        "meanings": [
+          {
+            "meaning": "Wing",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "wing"
+      },
+      {
+        "id": 177,
+        "characters": "几",
+        "image": "table",
+        "meanings": [
+          {
+            "meaning": "Table",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "table"
+      },
+      {
+        "id": 192,
+        "characters": "寺",
+        "image": "temple",
+        "meanings": [
+          {
+            "meaning": "Temple",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "temple"
+      },
+      {
+        "id": 214,
+        "characters": "門",
+        "image": "gate",
+        "meanings": [
+          {
+            "meaning": "Gate",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "gate"
+      },
+      {
+        "id": 228,
+        "characters": "己",
+        "image": "oneself",
+        "meanings": [
+          {
+            "meaning": "Oneself",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "oneself"
+      },
+      {
+        "id": 418,
+        "characters": "孝",
+        "image": "teacher",
+        "meanings": [
+          {
+            "meaning": "Teacher",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "teacher"
+      },
+      {
+        "id": 419,
+        "characters": "且",
+        "image": "top-hat",
+        "meanings": [
+          {
+            "meaning": "Top Hat",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "top-hat"
+      },
+      {
+        "id": 8823,
+        "characters": "象",
+        "image": "elephant",
+        "meanings": [
+          {
+            "meaning": "Elephant",
+            "primary": true
+          }
+        ],
+        "level": 7,
+        "slug": "elephant"
+      }
+    ],
+    "8": [
+      {
+        "id": 157,
+        "characters": "ユ",
+        "image": "hook",
+        "meanings": [
+          {
+            "meaning": "Hook",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "hook"
+      },
+      {
+        "id": 158,
+        "characters": "巳",
+        "image": "snake",
+        "meanings": [
+          {
+            "meaning": "Snake",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "snake"
+      },
+      {
+        "id": 159,
+        "characters": "云",
+        "image": "cloud",
+        "meanings": [
+          {
+            "meaning": "Cloud",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "cloud"
+      },
+      {
+        "id": 160,
+        "characters": "殳",
+        "image": "weapon",
+        "meanings": [
+          {
+            "meaning": "Weapon",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "weapon"
+      },
+      {
+        "id": 161,
+        "characters": "比",
+        "image": "compare",
+        "meanings": [
+          {
+            "meaning": "Compare",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "compare"
+      },
+      {
+        "id": 163,
+        "characters": "罒",
+        "image": "net",
+        "meanings": [
+          {
+            "meaning": "Net",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "net"
+      },
+      {
+        "id": 164,
+        "characters": "釆",
+        "image": "sickle",
+        "meanings": [
+          {
+            "meaning": "Sickle",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "sickle"
+      },
+      {
+        "id": 165,
+        "characters": "馬",
+        "image": "horse",
+        "meanings": [
+          {
+            "meaning": "Horse",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "horse"
+      },
+      {
+        "id": 172,
+        "characters": "易",
+        "image": "easy",
+        "meanings": [
+          {
+            "meaning": "Easy",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "easy"
+      },
+      {
+        "id": 216,
+        "characters": "合",
+        "image": "suit",
+        "meanings": [
+          {
+            "meaning": "Suit",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "suit"
+      },
+      {
+        "id": 217,
+        "characters": "匚",
+        "image": "cage",
+        "meanings": [
+          {
+            "meaning": "Cage",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "cage"
+      },
+      {
+        "id": 8780,
+        "characters": "𠃌",
+        "image": "cape",
+        "meanings": [
+          {
+            "meaning": "Cape",
+            "primary": true
+          }
+        ],
+        "level": 8,
+        "slug": "cape"
+      }
+    ],
+    "9": [
+      {
+        "id": 166,
+        "characters": "介",
+        "image": "jammed-in",
+        "meanings": [
+          {
+            "meaning": "Jammed In",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "jammed-in"
+      },
+      {
+        "id": 167,
+        "characters": "史",
+        "image": "history",
+        "meanings": [
+          {
+            "meaning": "History",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "history"
+      },
+      {
+        "id": 168,
+        "characters": "癶",
+        "image": "tent",
+        "meanings": [
+          {
+            "meaning": "Tent",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "tent"
+      },
+      {
+        "id": 175,
+        "characters": "咅",
+        "image": "clown",
+        "meanings": [
+          {
+            "meaning": "Clown",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "clown"
+      },
+      {
+        "id": 176,
+        "characters": "阝",
+        "image": "building",
+        "meanings": [
+          {
+            "meaning": "Building",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "building"
+      },
+      {
+        "id": 178,
+        "characters": "辛",
+        "image": "spicy",
+        "meanings": [
+          {
+            "meaning": "Spicy",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "spicy"
+      },
+      {
+        "id": 188,
+        "characters": "重",
+        "image": "heavy",
+        "meanings": [
+          {
+            "meaning": "Heavy",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "heavy"
+      },
+      {
+        "id": 218,
+        "characters": "反",
+        "image": "anti",
+        "meanings": [
+          {
+            "meaning": "Anti",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "anti"
+      },
+      {
+        "id": 220,
+        "characters": "聿",
+        "image": "brush",
+        "meanings": [
+          {
+            "meaning": "Brush",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "brush"
+      },
+      {
+        "id": 229,
+        "characters": "正",
+        "image": "correct",
+        "meanings": [
+          {
+            "meaning": "Correct",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "correct"
+      },
+      {
+        "id": 417,
+        "characters": "台",
+        "image": "machine",
+        "meanings": [
+          {
+            "meaning": "Machine",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "machine"
+      },
+      {
+        "id": 420,
+        "characters": "疋",
+        "image": "coat-rack",
+        "meanings": [
+          {
+            "meaning": "Coat Rack",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "coat-rack"
+      },
+      {
+        "id": 424,
+        "characters": "覀",
+        "image": "helicopter",
+        "meanings": [
+          {
+            "meaning": "Helicopter",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "helicopter"
+      },
+      {
+        "id": 8772,
+        "characters": "⺤",
+        "image": "cleat",
+        "meanings": [
+          {
+            "meaning": "Cleat",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "cleat"
+      },
+      {
+        "id": 8773,
+        "characters": null,
+        "image": "pope",
+        "meanings": [
+          {
+            "meaning": "Pope",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "pope"
+      },
+      {
+        "id": 8779,
+        "characters": "𡗗",
+        "image": "spring",
+        "meanings": [
+          {
+            "meaning": "Spring",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "spring"
+      },
+      {
+        "id": 8785,
+        "characters": "㑒",
+        "image": "squid",
+        "meanings": [
+          {
+            "meaning": "Squid",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "squid"
+      },
+      {
+        "id": 8787,
+        "characters": null,
+        "image": "yurt",
+        "meanings": [
+          {
+            "meaning": "Yurt",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "yurt"
+      },
+      {
+        "id": 8819,
+        "characters": "龹",
+        "image": "gladiator",
+        "meanings": [
+          {
+            "meaning": "Gladiator",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "gladiator"
+      },
+      {
+        "id": 8820,
+        "characters": "永",
+        "image": "eternity",
+        "meanings": [
+          {
+            "meaning": "Eternity",
+            "primary": true
+          }
+        ],
+        "level": 9,
+        "slug": "eternity"
+      }
+    ],
+    "10": [
+      {
+        "id": 179,
+        "characters": "圣",
+        "image": "tombstone",
+        "meanings": [
+          {
+            "meaning": "Tombstone",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "tombstone"
+      },
+      {
+        "id": 180,
+        "characters": "各",
+        "image": "kiss",
+        "meanings": [
+          {
+            "meaning": "Kiss",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "kiss"
+      },
+      {
+        "id": 181,
+        "characters": "豆",
+        "image": "beans",
+        "meanings": [
+          {
+            "meaning": "Beans",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "beans"
+      },
+      {
+        "id": 182,
+        "characters": "酉",
+        "image": "alcohol",
+        "meanings": [
+          {
+            "meaning": "Alcohol",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "alcohol"
+      },
+      {
+        "id": 183,
+        "characters": "辰",
+        "image": "landslide",
+        "meanings": [
+          {
+            "meaning": "Landslide",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "landslide"
+      },
+      {
+        "id": 184,
+        "characters": "頁",
+        "image": "geoduck",
+        "meanings": [
+          {
+            "meaning": "Geoduck",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "geoduck"
+      },
+      {
+        "id": 185,
+        "characters": "曲",
+        "image": "music",
+        "meanings": [
+          {
+            "meaning": "Music",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "music"
+      },
+      {
+        "id": 186,
+        "characters": "丙",
+        "image": "dynamite",
+        "meanings": [
+          {
+            "meaning": "Dynamite",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "dynamite"
+      },
+      {
+        "id": 187,
+        "characters": "疒",
+        "image": "sick",
+        "meanings": [
+          {
+            "meaning": "Sick",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "sick"
+      },
+      {
+        "id": 200,
+        "characters": "乃",
+        "image": "stairs",
+        "meanings": [
+          {
+            "meaning": "Stairs",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "stairs"
+      },
+      {
+        "id": 219,
+        "characters": "束",
+        "image": "bundle",
+        "meanings": [
+          {
+            "meaning": "Bundle",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "bundle"
+      },
+      {
+        "id": 240,
+        "characters": "隹",
+        "image": "turkey",
+        "meanings": [
+          {
+            "meaning": "Turkey",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "turkey"
+      },
+      {
+        "id": 275,
+        "characters": "失",
+        "image": "fault",
+        "meanings": [
+          {
+            "meaning": "Fault",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "fault"
+      },
+      {
+        "id": 439,
+        "characters": "売",
+        "image": "sell",
+        "meanings": [
+          {
+            "meaning": "Sell",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "sell"
+      },
+      {
+        "id": 8774,
+        "characters": "𦰩",
+        "image": "chinese",
+        "meanings": [
+          {
+            "meaning": "Chinese",
+            "primary": true
+          }
+        ],
+        "level": 10,
+        "slug": "chinese"
+      }
+    ],
+    "11": [
+      {
+        "id": 189,
+        "characters": "令",
+        "image": "orders",
+        "meanings": [
+          {
+            "meaning": "Orders",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "orders"
+      },
+      {
+        "id": 190,
+        "characters": "申",
+        "image": "humble",
+        "meanings": [
+          {
+            "meaning": "Humble",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "humble"
+      },
+      {
+        "id": 191,
+        "characters": "兄",
+        "image": "older-brother",
+        "meanings": [
+          {
+            "meaning": "Older Brother",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "older-brother"
+      },
+      {
+        "id": 193,
+        "characters": "及",
+        "image": "escalator",
+        "meanings": [
+          {
+            "meaning": "Escalator",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "escalator"
+      },
+      {
+        "id": 194,
+        "characters": "戈",
+        "image": "drunkard",
+        "meanings": [
+          {
+            "meaning": "Drunkard",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "drunkard"
+      },
+      {
+        "id": 195,
+        "characters": "皮",
+        "image": "skin",
+        "meanings": [
+          {
+            "meaning": "Skin",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "skin"
+      },
+      {
+        "id": 196,
+        "characters": "艮",
+        "image": "root",
+        "meanings": [
+          {
+            "meaning": "Root",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "root"
+      },
+      {
+        "id": 197,
+        "characters": "音",
+        "image": "sound",
+        "meanings": [
+          {
+            "meaning": "Sound",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "sound"
+      },
+      {
+        "id": 198,
+        "characters": "少",
+        "image": "few",
+        "meanings": [
+          {
+            "meaning": "Few",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "few"
+      },
+      {
+        "id": 199,
+        "characters": "単",
+        "image": "simple",
+        "meanings": [
+          {
+            "meaning": "Simple",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "simple"
+      },
+      {
+        "id": 8775,
+        "characters": "龷",
+        "image": "blackjack",
+        "meanings": [
+          {
+            "meaning": "Blackjack",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "blackjack"
+      },
+      {
+        "id": 8776,
+        "characters": "𠫓",
+        "image": "trash",
+        "meanings": [
+          {
+            "meaning": "Trash",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "trash"
+      },
+      {
+        "id": 8777,
+        "characters": "㠯",
+        "image": "bear",
+        "meanings": [
+          {
+            "meaning": "Bear",
+            "primary": true
+          }
+        ],
+        "level": 11,
+        "slug": "bear"
+      }
+    ],
+    "12": [
+      {
+        "id": 201,
+        "characters": "早",
+        "image": "early",
+        "meanings": [
+          {
+            "meaning": "Early",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "early"
+      },
+      {
+        "id": 202,
+        "characters": "弟",
+        "image": "younger-brother",
+        "meanings": [
+          {
+            "meaning": "Younger Brother",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "younger-brother"
+      },
+      {
+        "id": 203,
+        "characters": "者",
+        "image": "someone",
+        "meanings": [
+          {
+            "meaning": "Someone",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "someone"
+      },
+      {
+        "id": 204,
+        "characters": "亜",
+        "image": "asia",
+        "meanings": [
+          {
+            "meaning": "Asia",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "asia"
+      },
+      {
+        "id": 205,
+        "characters": "其",
+        "image": "crab",
+        "meanings": [
+          {
+            "meaning": "Crab",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "crab"
+      },
+      {
+        "id": 206,
+        "characters": "廴",
+        "image": "yoga",
+        "meanings": [
+          {
+            "meaning": "Yoga",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "yoga"
+      },
+      {
+        "id": 207,
+        "characters": "示",
+        "image": "jackhammer",
+        "meanings": [
+          {
+            "meaning": "Jackhammer",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "jackhammer"
+      },
+      {
+        "id": 208,
+        "characters": "免",
+        "image": "excuse",
+        "meanings": [
+          {
+            "meaning": "Excuse",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "excuse"
+      },
+      {
+        "id": 269,
+        "characters": "共",
+        "image": "together",
+        "meanings": [
+          {
+            "meaning": "Together",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "together"
+      },
+      {
+        "id": 339,
+        "characters": "予",
+        "image": "beforehand",
+        "meanings": [
+          {
+            "meaning": "Beforehand",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "beforehand"
+      },
+      {
+        "id": 390,
+        "characters": "業",
+        "image": "business",
+        "meanings": [
+          {
+            "meaning": "Business",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "business"
+      },
+      {
+        "id": 399,
+        "characters": "求",
+        "image": "request",
+        "meanings": [
+          {
+            "meaning": "Request",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "request"
+      },
+      {
+        "id": 8778,
+        "characters": null,
+        "image": "tofu",
+        "meanings": [
+          {
+            "meaning": "Tofu",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "tofu"
+      },
+      {
+        "id": 8821,
+        "characters": "直",
+        "image": "fix",
+        "meanings": [
+          {
+            "meaning": "Fix",
+            "primary": true
+          }
+        ],
+        "level": 12,
+        "slug": "fix"
+      }
+    ],
+    "13": [
+      {
+        "id": 215,
+        "characters": "尺",
+        "image": "shrimp",
+        "meanings": [
+          {
+            "meaning": "Shrimp",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "shrimp"
+      },
+      {
+        "id": 221,
+        "characters": "意",
+        "image": "idea",
+        "meanings": [
+          {
+            "meaning": "Idea",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "idea"
+      },
+      {
+        "id": 222,
+        "characters": "坴",
+        "image": "womb",
+        "meanings": [
+          {
+            "meaning": "Womb",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "womb"
+      },
+      {
+        "id": 223,
+        "characters": "丸",
+        "image": "circle",
+        "meanings": [
+          {
+            "meaning": "Circle",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "circle"
+      },
+      {
+        "id": 224,
+        "characters": "東",
+        "image": "east",
+        "meanings": [
+          {
+            "meaning": "East",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "east"
+      },
+      {
+        "id": 225,
+        "characters": "亼",
+        "image": "roof-225",
+        "meanings": [
+          {
+            "meaning": "Roof",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "roof-225"
+      },
+      {
+        "id": 226,
+        "characters": "冊",
+        "image": "bookshelf",
+        "meanings": [
+          {
+            "meaning": "Bookshelf",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "bookshelf"
+      },
+      {
+        "id": 227,
+        "characters": "品",
+        "image": "products",
+        "meanings": [
+          {
+            "meaning": "Products",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "products"
+      },
+      {
+        "id": 230,
+        "characters": "原",
+        "image": "original",
+        "meanings": [
+          {
+            "meaning": "Original",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "original"
+      },
+      {
+        "id": 232,
+        "characters": "忄",
+        "image": "soul",
+        "meanings": [
+          {
+            "meaning": "Soul",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "soul"
+      },
+      {
+        "id": 234,
+        "characters": "身",
+        "image": "body",
+        "meanings": [
+          {
+            "meaning": "Body",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "body"
+      },
+      {
+        "id": 235,
+        "characters": "果",
+        "image": "fruit",
+        "meanings": [
+          {
+            "meaning": "Fruit",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "fruit"
+      },
+      {
+        "id": 239,
+        "characters": "百",
+        "image": "hundred",
+        "meanings": [
+          {
+            "meaning": "Hundred",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "hundred"
+      },
+      {
+        "id": 392,
+        "characters": "缶",
+        "image": "can",
+        "meanings": [
+          {
+            "meaning": "Can",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "can"
+      },
+      {
+        "id": 8781,
+        "characters": null,
+        "image": "creeper",
+        "meanings": [
+          {
+            "meaning": "Creeper",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "creeper"
+      },
+      {
+        "id": 8822,
+        "characters": "良",
+        "image": "good",
+        "meanings": [
+          {
+            "meaning": "Good",
+            "primary": true
+          }
+        ],
+        "level": 13,
+        "slug": "good"
+      }
+    ],
+    "14": [
+      {
+        "id": 144,
+        "characters": "犭",
+        "image": "animal",
+        "meanings": [
+          {
+            "meaning": "Animal",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "animal"
+      },
+      {
+        "id": 236,
+        "characters": "勺",
+        "image": "pool",
+        "meanings": [
+          {
+            "meaning": "Pool",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "pool"
+      },
+      {
+        "id": 237,
+        "characters": "公",
+        "image": "public",
+        "meanings": [
+          {
+            "meaning": "Public",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "public"
+      },
+      {
+        "id": 246,
+        "characters": "井",
+        "image": "well",
+        "meanings": [
+          {
+            "meaning": "Well",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "well"
+      },
+      {
+        "id": 247,
+        "characters": "分",
+        "image": "part",
+        "meanings": [
+          {
+            "meaning": "Part",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "part"
+      },
+      {
+        "id": 264,
+        "characters": "才",
+        "image": "talent",
+        "meanings": [
+          {
+            "meaning": "Talent",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "talent"
+      },
+      {
+        "id": 8782,
+        "characters": "㦮",
+        "image": "bar",
+        "meanings": [
+          {
+            "meaning": "Bar",
+            "primary": true
+          }
+        ],
+        "level": 14,
+        "slug": "bar"
+      }
+    ],
+    "15": [
+      {
+        "id": 242,
+        "characters": "句",
+        "image": "paragraph",
+        "meanings": [
+          {
+            "meaning": "Paragraph",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "paragraph"
+      },
+      {
+        "id": 244,
+        "characters": "去",
+        "image": "past",
+        "meanings": [
+          {
+            "meaning": "Past",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "past"
+      },
+      {
+        "id": 245,
+        "characters": "歩",
+        "image": "walk",
+        "meanings": [
+          {
+            "meaning": "Walk",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "walk"
+      },
+      {
+        "id": 408,
+        "characters": "丈",
+        "image": "height",
+        "meanings": [
+          {
+            "meaning": "Height",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "height"
+      },
+      {
+        "id": 437,
+        "characters": "勇",
+        "image": "courage",
+        "meanings": [
+          {
+            "meaning": "Courage",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "courage"
+      },
+      {
+        "id": 8783,
+        "characters": "𭕄",
+        "image": "grass",
+        "meanings": [
+          {
+            "meaning": "Grass",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "grass"
+      },
+      {
+        "id": 8824,
+        "characters": "畐",
+        "image": "scarecrow",
+        "meanings": [
+          {
+            "meaning": "Scarecrow",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "scarecrow"
+      },
+      {
+        "id": 9329,
+        "characters": "亦",
+        "image": null,
+        "meanings": [
+          {
+            "meaning": "Again",
+            "primary": true
+          }
+        ],
+        "level": 15,
+        "slug": "again"
+      }
+    ],
+    "16": [
+      {
+        "id": 248,
+        "characters": "付",
+        "image": "attach",
+        "meanings": [
+          {
+            "meaning": "Attach",
+            "primary": true
+          }
+        ],
+        "level": 16,
+        "slug": "attach"
+      },
+      {
+        "id": 249,
+        "characters": "谷",
+        "image": "valley",
+        "meanings": [
+          {
+            "meaning": "Valley",
+            "primary": true
+          }
+        ],
+        "level": 16,
+        "slug": "valley"
+      },
+      {
+        "id": 250,
+        "characters": "面",
+        "image": "face",
+        "meanings": [
+          {
+            "meaning": "Face",
+            "primary": true
+          }
+        ],
+        "level": 16,
+        "slug": "face"
+      },
+      {
+        "id": 421,
+        "characters": "壴",
+        "image": "drum",
+        "meanings": [
+          {
+            "meaning": "Drum",
+            "primary": true
+          }
+        ],
+        "level": 16,
+        "slug": "drum"
+      },
+      {
+        "id": 8784,
+        "characters": "袁",
+        "image": "zombie",
+        "meanings": [
+          {
+            "meaning": "Zombie",
+            "primary": true
+          }
+        ],
+        "level": 16,
+        "slug": "zombie"
+      }
+    ],
+    "17": [
+      {
+        "id": 209,
+        "characters": "非",
+        "image": "criminal",
+        "meanings": [
+          {
+            "meaning": "Criminal",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "criminal"
+      },
+      {
+        "id": 251,
+        "characters": "楽",
+        "image": "comfort",
+        "meanings": [
+          {
+            "meaning": "Comfort",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "comfort"
+      },
+      {
+        "id": 252,
+        "characters": "無",
+        "image": "nothing",
+        "meanings": [
+          {
+            "meaning": "Nothing",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "nothing"
+      },
+      {
+        "id": 253,
+        "characters": "吉",
+        "image": "good-luck",
+        "meanings": [
+          {
+            "meaning": "Good Luck",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "good-luck"
+      },
+      {
+        "id": 254,
+        "characters": "虍",
+        "image": "tiger",
+        "meanings": [
+          {
+            "meaning": "Tiger",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "tiger"
+      },
+      {
+        "id": 255,
+        "characters": "苟",
+        "image": "poem",
+        "meanings": [
+          {
+            "meaning": "Poem",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "poem"
+      },
+      {
+        "id": 422,
+        "characters": "兑",
+        "image": "guard",
+        "meanings": [
+          {
+            "meaning": "Guard",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "guard"
+      },
+      {
+        "id": 8786,
+        "characters": null,
+        "image": "worm-8786",
+        "meanings": [
+          {
+            "meaning": "Worm",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "worm-8786"
+      },
+      {
+        "id": 8825,
+        "characters": "祭",
+        "image": "festival",
+        "meanings": [
+          {
+            "meaning": "Festival",
+            "primary": true
+          }
+        ],
+        "level": 17,
+        "slug": "festival"
+      }
+    ],
+    "18": [
+      {
+        "id": 256,
+        "characters": "昔",
+        "image": "long-ago",
+        "meanings": [
+          {
+            "meaning": "Long Ago",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "long-ago"
+      },
+      {
+        "id": 257,
+        "characters": "尭",
+        "image": "gambler",
+        "meanings": [
+          {
+            "meaning": "Gambler",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "gambler"
+      },
+      {
+        "id": 258,
+        "characters": "先",
+        "image": "previous",
+        "meanings": [
+          {
+            "meaning": "Previous",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "previous"
+      },
+      {
+        "id": 259,
+        "characters": "曽",
+        "image": "mask",
+        "meanings": [
+          {
+            "meaning": "Mask",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "mask"
+      },
+      {
+        "id": 260,
+        "characters": "幸",
+        "image": "happiness",
+        "meanings": [
+          {
+            "meaning": "Happiness",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "happiness"
+      },
+      {
+        "id": 261,
+        "characters": "争",
+        "image": "conflict",
+        "meanings": [
+          {
+            "meaning": "Conflict",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "conflict"
+      },
+      {
+        "id": 262,
+        "characters": "凶",
+        "image": "treasure-chest",
+        "meanings": [
+          {
+            "meaning": "Treasure Chest",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "treasure-chest"
+      },
+      {
+        "id": 415,
+        "characters": "午",
+        "image": "noon",
+        "meanings": [
+          {
+            "meaning": "Noon",
+            "primary": true
+          }
+        ],
+        "level": 18,
+        "slug": "noon"
+      }
+    ],
+    "19": [
+      {
+        "id": 263,
+        "characters": "成",
+        "image": "become",
+        "meanings": [
+          {
+            "meaning": "Become",
+            "primary": true
+          }
+        ],
+        "level": 19,
+        "slug": "become"
+      },
+      {
+        "id": 265,
+        "characters": "复",
+        "image": "black-hole",
+        "meanings": [
+          {
+            "meaning": "Black Hole",
+            "primary": true
+          }
+        ],
+        "level": 19,
+        "slug": "black-hole"
+      },
+      {
+        "id": 266,
+        "characters": "司",
+        "image": "director",
+        "meanings": [
+          {
+            "meaning": "Director",
+            "primary": true
+          }
+        ],
+        "level": 19,
+        "slug": "director"
+      },
+      {
+        "id": 268,
+        "characters": "由",
+        "image": "reason",
+        "meanings": [
+          {
+            "meaning": "Reason",
+            "primary": true
+          }
+        ],
+        "level": 19,
+        "slug": "reason"
+      },
+      {
+        "id": 272,
+        "characters": "我",
+        "image": "ego",
+        "meanings": [
+          {
+            "meaning": "Ego",
+            "primary": true
+          }
+        ],
+        "level": 19,
+        "slug": "ego"
+      },
+      {
+        "id": 362,
+        "characters": "右",
+        "image": "right",
+        "meanings": [
+          {
+            "meaning": "Right",
+            "primary": true
+          }
+        ],
+        "level": 19,
+        "slug": "right"
+      }
+    ],
+    "20": [
+      {
+        "id": 270,
+        "characters": "飛",
+        "image": "fly",
+        "meanings": [
+          {
+            "meaning": "Fly",
+            "primary": true
+          }
+        ],
+        "level": 20,
+        "slug": "fly"
+      },
+      {
+        "id": 271,
+        "characters": "兼",
+        "image": "mona-lisa",
+        "meanings": [
+          {
+            "meaning": "Mona Lisa",
+            "primary": true
+          }
+        ],
+        "level": 20,
+        "slug": "mona-lisa"
+      },
+      {
+        "id": 273,
+        "characters": "巛",
+        "image": "flood",
+        "meanings": [
+          {
+            "meaning": "Flood",
+            "primary": true
+          }
+        ],
+        "level": 20,
+        "slug": "flood"
+      },
+      {
+        "id": 274,
+        "characters": "至",
+        "image": "mole",
+        "meanings": [
+          {
+            "meaning": "Mole",
+            "primary": true
+          }
+        ],
+        "level": 20,
+        "slug": "mole"
+      },
+      {
+        "id": 383,
+        "characters": "義",
+        "image": "righteousness",
+        "meanings": [
+          {
+            "meaning": "Righteousness",
+            "primary": true
+          }
+        ],
+        "level": 20,
+        "slug": "righteousness"
+      },
+      {
+        "id": 8788,
+        "characters": null,
+        "image": "explosion",
+        "meanings": [
+          {
+            "meaning": "Explosion",
+            "primary": true
+          }
+        ],
+        "level": 20,
+        "slug": "explosion"
+      }
+    ],
+    "21": [
+      {
+        "id": 148,
+        "characters": "矛",
+        "image": "spear",
+        "meanings": [
+          {
+            "meaning": "Spear",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "spear"
+      },
+      {
+        "id": 276,
+        "characters": "啇",
+        "image": "mohawk",
+        "meanings": [
+          {
+            "meaning": "Mohawk",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "mohawk"
+      },
+      {
+        "id": 277,
+        "characters": "斉",
+        "image": "simultaneous",
+        "meanings": [
+          {
+            "meaning": "Simultaneous",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "simultaneous"
+      },
+      {
+        "id": 278,
+        "characters": "次",
+        "image": "next",
+        "meanings": [
+          {
+            "meaning": "Next",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "next"
+      },
+      {
+        "id": 280,
+        "characters": "番",
+        "image": "number",
+        "meanings": [
+          {
+            "meaning": "Number",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "number"
+      },
+      {
+        "id": 305,
+        "characters": "半",
+        "image": "half",
+        "meanings": [
+          {
+            "meaning": "Half",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "half"
+      },
+      {
+        "id": 393,
+        "characters": "刃",
+        "image": "blade",
+        "meanings": [
+          {
+            "meaning": "Blade",
+            "primary": true
+          }
+        ],
+        "level": 21,
+        "slug": "blade"
+      }
+    ],
+    "22": [
+      {
+        "id": 241,
+        "characters": "巩",
+        "image": "saw",
+        "meanings": [
+          {
+            "meaning": "Saw",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "saw"
+      },
+      {
+        "id": 279,
+        "characters": "平",
+        "image": "peace",
+        "meanings": [
+          {
+            "meaning": "Peace",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "peace"
+      },
+      {
+        "id": 282,
+        "characters": "呂",
+        "image": "bathtub",
+        "meanings": [
+          {
+            "meaning": "Bathtub",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "bathtub"
+      },
+      {
+        "id": 283,
+        "characters": "安",
+        "image": "cheap",
+        "meanings": [
+          {
+            "meaning": "Cheap",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "cheap"
+      },
+      {
+        "id": 284,
+        "characters": "弗",
+        "image": "dollar",
+        "meanings": [
+          {
+            "meaning": "Dollar",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "dollar"
+      },
+      {
+        "id": 285,
+        "characters": "充",
+        "image": "allocate",
+        "meanings": [
+          {
+            "meaning": "Allocate",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "allocate"
+      },
+      {
+        "id": 286,
+        "characters": "爰",
+        "image": "football",
+        "meanings": [
+          {
+            "meaning": "Football",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "football"
+      },
+      {
+        "id": 287,
+        "characters": "能",
+        "image": "ability",
+        "meanings": [
+          {
+            "meaning": "Ability",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "ability"
+      },
+      {
+        "id": 320,
+        "characters": "衣",
+        "image": "clothes",
+        "meanings": [
+          {
+            "meaning": "Clothes",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "clothes"
+      },
+      {
+        "id": 8826,
+        "characters": "丬",
+        "image": "icicle",
+        "meanings": [
+          {
+            "meaning": "Icicle",
+            "primary": true
+          }
+        ],
+        "level": 22,
+        "slug": "icicle"
+      }
+    ],
+    "23": [
+      {
+        "id": 288,
+        "characters": "革",
+        "image": "leather",
+        "meanings": [
+          {
+            "meaning": "Leather",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "leather"
+      },
+      {
+        "id": 289,
+        "characters": "丩",
+        "image": "vines",
+        "meanings": [
+          {
+            "meaning": "Vines",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "vines"
+      },
+      {
+        "id": 290,
+        "characters": "亭",
+        "image": "restaurant",
+        "meanings": [
+          {
+            "meaning": "Restaurant",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "restaurant"
+      },
+      {
+        "id": 291,
+        "characters": "道",
+        "image": "road",
+        "meanings": [
+          {
+            "meaning": "Road",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "road"
+      },
+      {
+        "id": 292,
+        "characters": "鬼",
+        "image": "demon",
+        "meanings": [
+          {
+            "meaning": "Demon",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "demon"
+      },
+      {
+        "id": 8789,
+        "characters": null,
+        "image": "corn-8789",
+        "meanings": [
+          {
+            "meaning": "Corn",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "corn-8789"
+      },
+      {
+        "id": 8793,
+        "characters": "𠦝",
+        "image": "morning",
+        "meanings": [
+          {
+            "meaning": "Morning",
+            "primary": true
+          }
+        ],
+        "level": 23,
+        "slug": "morning"
+      }
+    ],
+    "24": [
+      {
+        "id": 293,
+        "characters": "旦",
+        "image": "dawn",
+        "meanings": [
+          {
+            "meaning": "Dawn",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "dawn"
+      },
+      {
+        "id": 294,
+        "characters": "韋",
+        "image": "korea",
+        "meanings": [
+          {
+            "meaning": "Korea",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "korea"
+      },
+      {
+        "id": 295,
+        "characters": "客",
+        "image": "guest",
+        "meanings": [
+          {
+            "meaning": "Guest",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "guest"
+      },
+      {
+        "id": 296,
+        "characters": "制",
+        "image": "control",
+        "meanings": [
+          {
+            "meaning": "Control",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "control"
+      },
+      {
+        "id": 297,
+        "characters": "然",
+        "image": "nature",
+        "meanings": [
+          {
+            "meaning": "Nature",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "nature"
+      },
+      {
+        "id": 298,
+        "characters": "受",
+        "image": "accept",
+        "meanings": [
+          {
+            "meaning": "Accept",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "accept"
+      },
+      {
+        "id": 8790,
+        "characters": null,
+        "image": "death-star",
+        "meanings": [
+          {
+            "meaning": "Death Star",
+            "primary": true
+          }
+        ],
+        "level": 24,
+        "slug": "death-star"
+      }
+    ],
+    "25": [
+      {
+        "id": 299,
+        "characters": "京",
+        "image": "capital",
+        "meanings": [
+          {
+            "meaning": "Capital",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "capital"
+      },
+      {
+        "id": 300,
+        "characters": "甫",
+        "image": "wedding",
+        "meanings": [
+          {
+            "meaning": "Wedding",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "wedding"
+      },
+      {
+        "id": 301,
+        "characters": "友",
+        "image": "friend",
+        "meanings": [
+          {
+            "meaning": "Friend",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "friend"
+      },
+      {
+        "id": 302,
+        "characters": "交",
+        "image": "mix",
+        "meanings": [
+          {
+            "meaning": "Mix",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "mix"
+      },
+      {
+        "id": 303,
+        "characters": "冓",
+        "image": "lifeguard",
+        "meanings": [
+          {
+            "meaning": "Lifeguard",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "lifeguard"
+      },
+      {
+        "id": 304,
+        "characters": "両",
+        "image": "both",
+        "meanings": [
+          {
+            "meaning": "Both",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "both"
+      },
+      {
+        "id": 356,
+        "characters": "莫",
+        "image": "greenhouse",
+        "meanings": [
+          {
+            "meaning": "Greenhouse",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "greenhouse"
+      },
+      {
+        "id": 425,
+        "characters": "禹",
+        "image": "mantis",
+        "meanings": [
+          {
+            "meaning": "Mantis",
+            "primary": true
+          }
+        ],
+        "level": 25,
+        "slug": "mantis"
+      }
+    ],
+    "26": [
+      {
+        "id": 306,
+        "characters": "告",
+        "image": "announce",
+        "meanings": [
+          {
+            "meaning": "Announce",
+            "primary": true
+          }
+        ],
+        "level": 26,
+        "slug": "announce"
+      },
+      {
+        "id": 307,
+        "characters": "万",
+        "image": "ten-thousand",
+        "meanings": [
+          {
+            "meaning": "Ten Thousand",
+            "primary": true
+          }
+        ],
+        "level": 26,
+        "slug": "ten-thousand"
+      },
+      {
+        "id": 8791,
+        "characters": null,
+        "image": "egg-8791",
+        "meanings": [
+          {
+            "meaning": "Egg",
+            "primary": true
+          }
+        ],
+        "level": 26,
+        "slug": "egg-8791"
+      },
+      {
+        "id": 8792,
+        "characters": null,
+        "image": "comb",
+        "meanings": [
+          {
+            "meaning": "Comb",
+            "primary": true
+          }
+        ],
+        "level": 26,
+        "slug": "comb"
+      },
+      {
+        "id": 8827,
+        "characters": "倉",
+        "image": "warehouse",
+        "meanings": [
+          {
+            "meaning": "Warehouse",
+            "primary": true
+          }
+        ],
+        "level": 26,
+        "slug": "warehouse"
+      },
+      {
+        "id": 8828,
+        "characters": "章",
+        "image": "chapter",
+        "meanings": [
+          {
+            "meaning": "Chapter",
+            "primary": true
+          }
+        ],
+        "level": 26,
+        "slug": "chapter"
+      }
+    ],
+    "27": [
+      {
+        "id": 308,
+        "characters": "農",
+        "image": "farming",
+        "meanings": [
+          {
+            "meaning": "Farming",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "farming"
+      },
+      {
+        "id": 309,
+        "characters": "而",
+        "image": "rake",
+        "meanings": [
+          {
+            "meaning": "Rake",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "rake"
+      },
+      {
+        "id": 310,
+        "characters": "代",
+        "image": "substitute",
+        "meanings": [
+          {
+            "meaning": "Substitute",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "substitute"
+      },
+      {
+        "id": 311,
+        "characters": "化",
+        "image": "change",
+        "meanings": [
+          {
+            "meaning": "Change",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "change"
+      },
+      {
+        "id": 312,
+        "characters": "民",
+        "image": "peoples",
+        "meanings": [
+          {
+            "meaning": "Peoples",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "peoples"
+      },
+      {
+        "id": 313,
+        "characters": "余",
+        "image": "surplus",
+        "meanings": [
+          {
+            "meaning": "Surplus",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "surplus"
+      },
+      {
+        "id": 331,
+        "characters": "召",
+        "image": "call",
+        "meanings": [
+          {
+            "meaning": "Call",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "call"
+      },
+      {
+        "id": 332,
+        "characters": "出",
+        "image": "exit",
+        "meanings": [
+          {
+            "meaning": "Exit",
+            "primary": true
+          }
+        ],
+        "level": 27,
+        "slug": "exit"
+      }
+    ],
+    "28": [
+      {
+        "id": 314,
+        "characters": "巨",
+        "image": "giant",
+        "meanings": [
+          {
+            "meaning": "Giant",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "giant"
+      },
+      {
+        "id": 315,
+        "characters": "屯",
+        "image": "barracks",
+        "meanings": [
+          {
+            "meaning": "Barracks",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "barracks"
+      },
+      {
+        "id": 316,
+        "characters": "絜",
+        "image": "hercules-316",
+        "meanings": [
+          {
+            "meaning": "Hercules",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "hercules-316"
+      },
+      {
+        "id": 317,
+        "characters": "専",
+        "image": "specialty",
+        "meanings": [
+          {
+            "meaning": "Specialty",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "specialty"
+      },
+      {
+        "id": 318,
+        "characters": "麗",
+        "image": "lovely",
+        "meanings": [
+          {
+            "meaning": "Lovely",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "lovely"
+      },
+      {
+        "id": 326,
+        "characters": "奇",
+        "image": "odd",
+        "meanings": [
+          {
+            "meaning": "Odd",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "odd"
+      },
+      {
+        "id": 8908,
+        "characters": "前",
+        "image": "before",
+        "meanings": [
+          {
+            "meaning": "Before",
+            "primary": true
+          }
+        ],
+        "level": 28,
+        "slug": "before"
+      }
+    ],
+    "29": [
+      {
+        "id": 319,
+        "characters": "尞",
+        "image": "charcoal",
+        "meanings": [
+          {
+            "meaning": "Charcoal",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "charcoal"
+      },
+      {
+        "id": 321,
+        "characters": "責",
+        "image": "blame",
+        "meanings": [
+          {
+            "meaning": "Blame",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "blame"
+      },
+      {
+        "id": 322,
+        "characters": "区",
+        "image": "district",
+        "meanings": [
+          {
+            "meaning": "District",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "district"
+      },
+      {
+        "id": 323,
+        "characters": "臣",
+        "image": "servant",
+        "meanings": [
+          {
+            "meaning": "Servant",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "servant"
+      },
+      {
+        "id": 324,
+        "characters": "乙",
+        "image": "nose",
+        "meanings": [
+          {
+            "meaning": "Nose",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "nose"
+      },
+      {
+        "id": 325,
+        "characters": "上",
+        "image": "above",
+        "meanings": [
+          {
+            "meaning": "Above",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "above"
+      },
+      {
+        "id": 403,
+        "characters": "玄",
+        "image": "mysterious",
+        "meanings": [
+          {
+            "meaning": "Mysterious",
+            "primary": true
+          }
+        ],
+        "level": 29,
+        "slug": "mysterious"
+      }
+    ],
+    "30": [
+      {
+        "id": 162,
+        "characters": "片",
+        "image": "one-sided",
+        "meanings": [
+          {
+            "meaning": "One Sided",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "one-sided"
+      },
+      {
+        "id": 327,
+        "characters": "北",
+        "image": "north",
+        "meanings": [
+          {
+            "meaning": "North",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "north"
+      },
+      {
+        "id": 328,
+        "characters": "監",
+        "image": "oversee",
+        "meanings": [
+          {
+            "meaning": "Oversee",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "oversee"
+      },
+      {
+        "id": 329,
+        "characters": "系",
+        "image": "lineage",
+        "meanings": [
+          {
+            "meaning": "Lineage",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "lineage"
+      },
+      {
+        "id": 330,
+        "characters": "甲",
+        "image": "turtle-shell",
+        "meanings": [
+          {
+            "meaning": "Turtle Shell",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "turtle-shell"
+      },
+      {
+        "id": 391,
+        "characters": "冘",
+        "image": "pirate",
+        "meanings": [
+          {
+            "meaning": "Pirate",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "pirate"
+      },
+      {
+        "id": 8771,
+        "characters": null,
+        "image": "hills",
+        "meanings": [
+          {
+            "meaning": "Hills",
+            "primary": true
+          }
+        ],
+        "level": 30,
+        "slug": "hills"
+      }
+    ],
+    "31": [
+      {
+        "id": 333,
+        "characters": "牙",
+        "image": "fang",
+        "meanings": [
+          {
+            "meaning": "Fang",
+            "primary": true
+          }
+        ],
+        "level": 31,
+        "slug": "fang"
+      },
+      {
+        "id": 334,
+        "characters": "並",
+        "image": "line-up",
+        "meanings": [
+          {
+            "meaning": "Line Up",
+            "primary": true
+          }
+        ],
+        "level": 31,
+        "slug": "line-up"
+      },
+      {
+        "id": 336,
+        "characters": "鬲",
+        "image": "bully",
+        "meanings": [
+          {
+            "meaning": "Bully",
+            "primary": true
+          }
+        ],
+        "level": 31,
+        "slug": "bully"
+      },
+      {
+        "id": 337,
+        "characters": "离",
+        "image": "rocket",
+        "meanings": [
+          {
+            "meaning": "Rocket",
+            "primary": true
+          }
+        ],
+        "level": 31,
+        "slug": "rocket"
+      },
+      {
+        "id": 338,
+        "characters": "扁",
+        "image": "library",
+        "meanings": [
+          {
+            "meaning": "Library",
+            "primary": true
+          }
+        ],
+        "level": 31,
+        "slug": "library"
+      },
+      {
+        "id": 8829,
+        "characters": "郎",
+        "image": "guy",
+        "meanings": [
+          {
+            "meaning": "Guy",
+            "primary": true
+          }
+        ],
+        "level": 31,
+        "slug": "guy"
+      }
+    ],
+    "32": [
+      {
+        "id": 340,
+        "characters": "卬",
+        "image": "cat-pirate",
+        "meanings": [
+          {
+            "meaning": "Cat Pirate",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "cat-pirate"
+      },
+      {
+        "id": 341,
+        "characters": "同",
+        "image": "same",
+        "meanings": [
+          {
+            "meaning": "Same",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "same"
+      },
+      {
+        "id": 342,
+        "characters": "夜",
+        "image": "night",
+        "meanings": [
+          {
+            "meaning": "Night",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "night"
+      },
+      {
+        "id": 343,
+        "characters": "必",
+        "image": "certain",
+        "meanings": [
+          {
+            "meaning": "Certain",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "certain"
+      },
+      {
+        "id": 427,
+        "characters": "夋",
+        "image": "spider",
+        "meanings": [
+          {
+            "meaning": "Spider",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "spider"
+      },
+      {
+        "id": 433,
+        "characters": "舎",
+        "image": "cottage",
+        "meanings": [
+          {
+            "meaning": "Cottage",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "cottage"
+      },
+      {
+        "id": 8799,
+        "characters": null,
+        "image": "elf",
+        "meanings": [
+          {
+            "meaning": "Elf",
+            "primary": true
+          }
+        ],
+        "level": 32,
+        "slug": "elf"
+      }
+    ],
+    "33": [
+      {
+        "id": 344,
+        "characters": "間",
+        "image": "interval",
+        "meanings": [
+          {
+            "meaning": "Interval",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "interval"
+      },
+      {
+        "id": 345,
+        "characters": "享",
+        "image": "receive",
+        "meanings": [
+          {
+            "meaning": "Receive",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "receive"
+      },
+      {
+        "id": 346,
+        "characters": "内",
+        "image": "inside",
+        "meanings": [
+          {
+            "meaning": "Inside",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "inside"
+      },
+      {
+        "id": 347,
+        "characters": "蔵",
+        "image": "storehouse",
+        "meanings": [
+          {
+            "meaning": "Storehouse",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "storehouse"
+      },
+      {
+        "id": 382,
+        "characters": "広",
+        "image": "wide",
+        "meanings": [
+          {
+            "meaning": "Wide",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "wide"
+      },
+      {
+        "id": 8794,
+        "characters": "丞",
+        "image": "coral",
+        "meanings": [
+          {
+            "meaning": "Coral",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "coral"
+      },
+      {
+        "id": 8830,
+        "characters": "喿",
+        "image": "syrup",
+        "meanings": [
+          {
+            "meaning": "Syrup",
+            "primary": true
+          }
+        ],
+        "level": 33,
+        "slug": "syrup"
+      }
+    ],
+    "34": [
+      {
+        "id": 348,
+        "characters": "呉",
+        "image": "catapult",
+        "meanings": [
+          {
+            "meaning": "Catapult",
+            "primary": true
+          }
+        ],
+        "level": 34,
+        "slug": "catapult"
+      },
+      {
+        "id": 349,
+        "characters": "員",
+        "image": "member",
+        "meanings": [
+          {
+            "meaning": "Member",
+            "primary": true
+          }
+        ],
+        "level": 34,
+        "slug": "member"
+      },
+      {
+        "id": 350,
+        "characters": "爪",
+        "image": "claw",
+        "meanings": [
+          {
+            "meaning": "Claw",
+            "primary": true
+          }
+        ],
+        "level": 34,
+        "slug": "claw"
+      },
+      {
+        "id": 351,
+        "characters": "亥",
+        "image": "slice",
+        "meanings": [
+          {
+            "meaning": "Slice",
+            "primary": true
+          }
+        ],
+        "level": 34,
+        "slug": "slice"
+      },
+      {
+        "id": 428,
+        "characters": "堇",
+        "image": "boot",
+        "meanings": [
+          {
+            "meaning": "Boot",
+            "primary": true
+          }
+        ],
+        "level": 34,
+        "slug": "boot"
+      }
+    ],
+    "35": [
+      {
+        "id": 352,
+        "characters": "帯",
+        "image": "belt",
+        "meanings": [
+          {
+            "meaning": "Belt",
+            "primary": true
+          }
+        ],
+        "level": 35,
+        "slug": "belt"
+      },
+      {
+        "id": 353,
+        "characters": "亀",
+        "image": "turtle",
+        "meanings": [
+          {
+            "meaning": "Turtle",
+            "primary": true
+          }
+        ],
+        "level": 35,
+        "slug": "turtle"
+      },
+      {
+        "id": 354,
+        "characters": "彑",
+        "image": "shuriken",
+        "meanings": [
+          {
+            "meaning": "Shuriken",
+            "primary": true
+          }
+        ],
+        "level": 35,
+        "slug": "shuriken"
+      },
+      {
+        "id": 355,
+        "characters": "為",
+        "image": "sake",
+        "meanings": [
+          {
+            "meaning": "Sake",
+            "primary": true
+          }
+        ],
+        "level": 35,
+        "slug": "sake"
+      },
+      {
+        "id": 8831,
+        "characters": "将",
+        "image": "commander",
+        "meanings": [
+          {
+            "meaning": "Commander",
+            "primary": true
+          }
+        ],
+        "level": 35,
+        "slug": "commander"
+      }
+    ],
+    "36": [
+      {
+        "id": 357,
+        "characters": "明",
+        "image": "bright",
+        "meanings": [
+          {
+            "meaning": "Bright",
+            "primary": true
+          }
+        ],
+        "level": 36,
+        "slug": "bright"
+      },
+      {
+        "id": 358,
+        "characters": "貴",
+        "image": "valuable",
+        "meanings": [
+          {
+            "meaning": "Valuable",
+            "primary": true
+          }
+        ],
+        "level": 36,
+        "slug": "valuable"
+      },
+      {
+        "id": 359,
+        "characters": "発",
+        "image": "departure",
+        "meanings": [
+          {
+            "meaning": "Departure",
+            "primary": true
+          }
+        ],
+        "level": 36,
+        "slug": "departure"
+      },
+      {
+        "id": 360,
+        "characters": "甘",
+        "image": "sweet",
+        "meanings": [
+          {
+            "meaning": "Sweet",
+            "primary": true
+          }
+        ],
+        "level": 36,
+        "slug": "sweet"
+      },
+      {
+        "id": 361,
+        "characters": "南",
+        "image": "south",
+        "meanings": [
+          {
+            "meaning": "South",
+            "primary": true
+          }
+        ],
+        "level": 36,
+        "slug": "south"
+      },
+      {
+        "id": 429,
+        "characters": "舛",
+        "image": "dance",
+        "meanings": [
+          {
+            "meaning": "Dance",
+            "primary": true
+          }
+        ],
+        "level": 36,
+        "slug": "dance"
+      }
+    ],
+    "37": [
+      {
+        "id": 363,
+        "characters": "兆",
+        "image": "omen",
+        "meanings": [
+          {
+            "meaning": "Omen",
+            "primary": true
+          }
+        ],
+        "level": 37,
+        "slug": "omen"
+      },
+      {
+        "id": 364,
+        "characters": "賞",
+        "image": "prize",
+        "meanings": [
+          {
+            "meaning": "Prize",
+            "primary": true
+          }
+        ],
+        "level": 37,
+        "slug": "prize"
+      },
+      {
+        "id": 365,
+        "characters": "串",
+        "image": "skewer",
+        "meanings": [
+          {
+            "meaning": "Skewer",
+            "primary": true
+          }
+        ],
+        "level": 37,
+        "slug": "skewer"
+      },
+      {
+        "id": 366,
+        "characters": "暴",
+        "image": "violence",
+        "meanings": [
+          {
+            "meaning": "Violence",
+            "primary": true
+          }
+        ],
+        "level": 37,
+        "slug": "violence"
+      },
+      {
+        "id": 395,
+        "characters": "包",
+        "image": "wrap",
+        "meanings": [
+          {
+            "meaning": "Wrap",
+            "primary": true
+          }
+        ],
+        "level": 37,
+        "slug": "wrap"
+      }
+    ],
+    "38": [
+      {
+        "id": 367,
+        "characters": "辟",
+        "image": "hot-pepper",
+        "meanings": [
+          {
+            "meaning": "Hot Pepper",
+            "primary": true
+          }
+        ],
+        "level": 38,
+        "slug": "hot-pepper"
+      },
+      {
+        "id": 368,
+        "characters": "思",
+        "image": "think",
+        "meanings": [
+          {
+            "meaning": "Think",
+            "primary": true
+          }
+        ],
+        "level": 38,
+        "slug": "think"
+      },
+      {
+        "id": 369,
+        "characters": "県",
+        "image": "prefecture",
+        "meanings": [
+          {
+            "meaning": "Prefecture",
+            "primary": true
+          }
+        ],
+        "level": 38,
+        "slug": "prefecture"
+      },
+      {
+        "id": 371,
+        "characters": "有",
+        "image": "have",
+        "meanings": [
+          {
+            "meaning": "Have",
+            "primary": true
+          }
+        ],
+        "level": 38,
+        "slug": "have"
+      },
+      {
+        "id": 372,
+        "characters": "歯",
+        "image": "tooth",
+        "meanings": [
+          {
+            "meaning": "Tooth",
+            "primary": true
+          }
+        ],
+        "level": 38,
+        "slug": "tooth"
+      }
+    ],
+    "39": [
+      {
+        "id": 370,
+        "characters": "空",
+        "image": "sky",
+        "meanings": [
+          {
+            "meaning": "Sky",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "sky"
+      },
+      {
+        "id": 373,
+        "characters": "君",
+        "image": "buddy",
+        "meanings": [
+          {
+            "meaning": "Buddy",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "buddy"
+      },
+      {
+        "id": 374,
+        "characters": "旧",
+        "image": "former",
+        "meanings": [
+          {
+            "meaning": "Former",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "former"
+      },
+      {
+        "id": 375,
+        "characters": "六",
+        "image": null,
+        "meanings": [
+          {
+            "meaning": "Six",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "six-375"
+      },
+      {
+        "id": 376,
+        "characters": "岡",
+        "image": "hill",
+        "meanings": [
+          {
+            "meaning": "Hill",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "hill"
+      },
+      {
+        "id": 377,
+        "characters": "三",
+        "image": "three",
+        "meanings": [
+          {
+            "meaning": "Three",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "three"
+      },
+      {
+        "id": 413,
+        "characters": "真",
+        "image": "reality",
+        "meanings": [
+          {
+            "meaning": "Reality",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "reality"
+      },
+      {
+        "id": 414,
+        "characters": "巻",
+        "image": "scroll",
+        "meanings": [
+          {
+            "meaning": "Scroll",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "scroll"
+      },
+      {
+        "id": 430,
+        "characters": "㐮",
+        "image": "nurse",
+        "meanings": [
+          {
+            "meaning": "Nurse",
+            "primary": true
+          }
+        ],
+        "level": 39,
+        "slug": "nurse"
+      }
+    ],
+    "40": [
+      {
+        "id": 378,
+        "characters": "雇",
+        "image": "employ",
+        "meanings": [
+          {
+            "meaning": "Employ",
+            "primary": true
+          }
+        ],
+        "level": 40,
+        "slug": "employ"
+      },
+      {
+        "id": 379,
+        "characters": "毎",
+        "image": "every",
+        "meanings": [
+          {
+            "meaning": "Every",
+            "primary": true
+          }
+        ],
+        "level": 40,
+        "slug": "every"
+      },
+      {
+        "id": 380,
+        "characters": "保",
+        "image": "preserve",
+        "meanings": [
+          {
+            "meaning": "Preserve",
+            "primary": true
+          }
+        ],
+        "level": 40,
+        "slug": "preserve"
+      },
+      {
+        "id": 8833,
+        "characters": "喜",
+        "image": "rejoice",
+        "meanings": [
+          {
+            "meaning": "Rejoice",
+            "primary": true
+          }
+        ],
+        "level": 40,
+        "slug": "rejoice"
+      },
+      {
+        "id": 8907,
+        "characters": "麦",
+        "image": "wheat",
+        "meanings": [
+          {
+            "meaning": "Wheat",
+            "primary": true
+          }
+        ],
+        "level": 40,
+        "slug": "wheat"
+      }
+    ],
+    "41": [
+      {
+        "id": 335,
+        "characters": "華",
+        "image": "showy",
+        "meanings": [
+          {
+            "meaning": "Showy",
+            "primary": true
+          }
+        ],
+        "level": 41,
+        "slug": "showy"
+      },
+      {
+        "id": 381,
+        "characters": "夆",
+        "image": "signpost",
+        "meanings": [
+          {
+            "meaning": "Signpost",
+            "primary": true
+          }
+        ],
+        "level": 41,
+        "slug": "signpost"
+      },
+      {
+        "id": 8795,
+        "characters": null,
+        "image": "trident-8795",
+        "meanings": [
+          {
+            "meaning": "Trident",
+            "primary": true
+          }
+        ],
+        "level": 41,
+        "slug": "trident-8795"
+      },
+      {
+        "id": 8796,
+        "characters": null,
+        "image": "cactus",
+        "meanings": [
+          {
+            "meaning": "Cactus",
+            "primary": true
+          }
+        ],
+        "level": 41,
+        "slug": "cactus"
+      },
+      {
+        "id": 8856,
+        "characters": "妻",
+        "image": "wife",
+        "meanings": [
+          {
+            "meaning": "Wife",
+            "primary": true
+          }
+        ],
+        "level": 41,
+        "slug": "wife"
+      },
+      {
+        "id": 8906,
+        "characters": "宣",
+        "image": "proclaim",
+        "meanings": [
+          {
+            "meaning": "Proclaim",
+            "primary": true
+          }
+        ],
+        "level": 41,
+        "slug": "proclaim"
+      }
+    ],
+    "42": [
+      {
+        "id": 384,
+        "characters": "瓜",
+        "image": "melon",
+        "meanings": [
+          {
+            "meaning": "Melon",
+            "primary": true
+          }
+        ],
+        "level": 42,
+        "slug": "melon"
+      },
+      {
+        "id": 385,
+        "characters": "骨",
+        "image": "bone",
+        "meanings": [
+          {
+            "meaning": "Bone",
+            "primary": true
+          }
+        ],
+        "level": 42,
+        "slug": "bone"
+      },
+      {
+        "id": 386,
+        "characters": "臼",
+        "image": "grenade-386",
+        "meanings": [
+          {
+            "meaning": "Grenade",
+            "primary": true
+          }
+        ],
+        "level": 42,
+        "slug": "grenade-386"
+      },
+      {
+        "id": 387,
+        "characters": "屋",
+        "image": "shop",
+        "meanings": [
+          {
+            "meaning": "Shop",
+            "primary": true
+          }
+        ],
+        "level": 42,
+        "slug": "shop"
+      },
+      {
+        "id": 8798,
+        "characters": null,
+        "image": "satellite",
+        "meanings": [
+          {
+            "meaning": "Satellite",
+            "primary": true
+          }
+        ],
+        "level": 42,
+        "slug": "satellite"
+      }
+    ],
+    "43": [
+      {
+        "id": 388,
+        "characters": "耒",
+        "image": "plow",
+        "meanings": [
+          {
+            "meaning": "Plow",
+            "primary": true
+          }
+        ],
+        "level": 43,
+        "slug": "plow"
+      },
+      {
+        "id": 389,
+        "characters": "龍",
+        "image": "imperial",
+        "meanings": [
+          {
+            "meaning": "Imperial",
+            "primary": true
+          }
+        ],
+        "level": 43,
+        "slug": "imperial"
+      },
+      {
+        "id": 412,
+        "characters": "豸",
+        "image": "badger",
+        "meanings": [
+          {
+            "meaning": "Badger",
+            "primary": true
+          }
+        ],
+        "level": 43,
+        "slug": "badger"
+      }
+    ],
+    "44": [
+      {
+        "id": 394,
+        "characters": "竜",
+        "image": "dragon",
+        "meanings": [
+          {
+            "meaning": "Dragon",
+            "primary": true
+          }
+        ],
+        "level": 44,
+        "slug": "dragon"
+      },
+      {
+        "id": 416,
+        "characters": "風",
+        "image": "wind",
+        "meanings": [
+          {
+            "meaning": "Wind",
+            "primary": true
+          }
+        ],
+        "level": 44,
+        "slug": "wind"
+      }
+    ],
+    "45": [
+      {
+        "id": 396,
+        "characters": "守",
+        "image": "protect",
+        "meanings": [
+          {
+            "meaning": "Protect",
+            "primary": true
+          }
+        ],
+        "level": 45,
+        "slug": "protect"
+      },
+      {
+        "id": 397,
+        "characters": "更",
+        "image": "renew",
+        "meanings": [
+          {
+            "meaning": "Renew",
+            "primary": true
+          }
+        ],
+        "level": 45,
+        "slug": "renew"
+      }
+    ],
+    "46": [
+      {
+        "id": 400,
+        "characters": "恵",
+        "image": "favor",
+        "meanings": [
+          {
+            "meaning": "Favor",
+            "primary": true
+          }
+        ],
+        "level": 46,
+        "slug": "favor"
+      },
+      {
+        "id": 411,
+        "characters": "太",
+        "image": "fat",
+        "meanings": [
+          {
+            "meaning": "Fat",
+            "primary": true
+          }
+        ],
+        "level": 46,
+        "slug": "fat"
+      }
+    ],
+    "47": [
+      {
+        "id": 401,
+        "characters": "務",
+        "image": "task-401",
+        "meanings": [
+          {
+            "meaning": "Task",
+            "primary": true
+          }
+        ],
+        "level": 47,
+        "slug": "task-401"
+      },
+      {
+        "id": 402,
+        "characters": "波",
+        "image": "wave",
+        "meanings": [
+          {
+            "meaning": "Wave",
+            "primary": true
+          }
+        ],
+        "level": 47,
+        "slug": "wave"
+      },
+      {
+        "id": 431,
+        "characters": "敝",
+        "image": "penguin",
+        "meanings": [
+          {
+            "meaning": "Penguin",
+            "primary": true
+          }
+        ],
+        "level": 47,
+        "slug": "penguin"
+      }
+    ],
+    "48": [
+      {
+        "id": 404,
+        "characters": "容",
+        "image": "form",
+        "meanings": [
+          {
+            "meaning": "Form",
+            "primary": true
+          }
+        ],
+        "level": 48,
+        "slug": "form"
+      },
+      {
+        "id": 405,
+        "characters": "光",
+        "image": "light",
+        "meanings": [
+          {
+            "meaning": "Light",
+            "primary": true
+          }
+        ],
+        "level": 48,
+        "slug": "light"
+      }
+    ],
+    "49": [
+      {
+        "id": 406,
+        "characters": "回",
+        "image": "times",
+        "meanings": [
+          {
+            "meaning": "Times",
+            "primary": true
+          }
+        ],
+        "level": 49,
+        "slug": "times"
+      },
+      {
+        "id": 407,
+        "characters": "甚",
+        "image": "crab-trap",
+        "meanings": [
+          {
+            "meaning": "Crab Trap",
+            "primary": true
+          }
+        ],
+        "level": 49,
+        "slug": "crab-trap"
+      },
+      {
+        "id": 8857,
+        "characters": "荒",
+        "image": "wild",
+        "meanings": [
+          {
+            "meaning": "Wild",
+            "primary": true
+          }
+        ],
+        "level": 49,
+        "slug": "wild"
+      }
+    ],
+    "50": [
+      {
+        "id": 409,
+        "characters": "名",
+        "image": "name",
+        "meanings": [
+          {
+            "meaning": "Name",
+            "primary": true
+          }
+        ],
+        "level": 50,
+        "slug": "name"
+      },
+      {
+        "id": 410,
+        "characters": "禺",
+        "image": "splinter",
+        "meanings": [
+          {
+            "meaning": "Splinter",
+            "primary": true
+          }
+        ],
+        "level": 50,
+        "slug": "splinter"
+      },
+      {
+        "id": 8797,
+        "characters": null,
+        "image": "psychopath",
+        "meanings": [
+          {
+            "meaning": "Psychopath",
+            "primary": true
+          }
+        ],
+        "level": 50,
+        "slug": "psychopath"
+      }
+    ],
+    "51": [
+      {
+        "id": 432,
+        "characters": "胃",
+        "image": "stomach",
+        "meanings": [
+          {
+            "meaning": "Stomach",
+            "primary": true
+          }
+        ],
+        "level": 51,
+        "slug": "stomach"
+      }
+    ],
+    "52": [
+      {
+        "id": 426,
+        "characters": "夌",
+        "image": "frostbite",
+        "meanings": [
+          {
+            "meaning": "Frostbite",
+            "primary": true
+          }
+        ],
+        "level": 52,
+        "slug": "frostbite"
+      }
+    ],
+    "53": [
+      {
+        "id": 438,
+        "characters": "高",
+        "image": "tall",
+        "meanings": [
+          {
+            "meaning": "Tall",
+            "primary": true
+          }
+        ],
+        "level": 53,
+        "slug": "tall"
+      }
+    ],
+    "55": [
+      {
+        "id": 423,
+        "characters": "感",
+        "image": "feeling",
+        "meanings": [
+          {
+            "meaning": "Feeling",
+            "primary": true
+          }
+        ],
+        "level": 55,
+        "slug": "feeling"
+      },
+      {
+        "id": 8832,
+        "characters": "疑",
+        "image": "doubt",
+        "meanings": [
+          {
+            "meaning": "Doubt",
+            "primary": true
+          }
+        ],
+        "level": 55,
+        "slug": "doubt"
+      }
+    ],
+    "57": [
+      {
+        "id": 434,
+        "characters": "凸",
+        "image": "convex",
+        "meanings": [
+          {
+            "meaning": "Convex",
+            "primary": true
+          }
+        ],
+        "level": 57,
+        "slug": "convex"
+      },
+      {
+        "id": 435,
+        "characters": "凹",
+        "image": "concave",
+        "meanings": [
+          {
+            "meaning": "Concave",
+            "primary": true
+          }
+        ],
+        "level": 57,
+        "slug": "concave"
+      }
+    ],
+    "59": [
+      {
+        "id": 436,
+        "characters": "下",
+        "image": "below",
+        "meanings": [
+          {
+            "meaning": "Below",
+            "primary": true
+          }
+        ],
+        "level": 59,
+        "slug": "below"
+      }
+    ]
+  },
+  "count": 499
+}
