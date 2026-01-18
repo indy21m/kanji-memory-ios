@@ -4,13 +4,31 @@ import SwiftData
 struct ReviewsView: View {
     @Query(filter: #Predicate<KanjiProgress> { progress in
         progress.nextReviewAt != nil
-    }, sort: \KanjiProgress.nextReviewAt) private var dueItems: [KanjiProgress]
+    }, sort: \KanjiProgress.nextReviewAt) private var allItemsWithReviewDate: [KanjiProgress]
+
+    // Filter to only items that are actually due (nextReviewAt <= now)
+    private var dueItems: [KanjiProgress] {
+        let now = Date()
+        return allItemsWithReviewDate.filter { progress in
+            guard let reviewDate = progress.nextReviewAt else { return false }
+            return reviewDate <= now
+        }
+    }
+
+    // Items that have a review date but aren't due yet
+    private var upcomingItems: [KanjiProgress] {
+        let now = Date()
+        return allItemsWithReviewDate.filter { progress in
+            guard let reviewDate = progress.nextReviewAt else { return false }
+            return reviewDate > now
+        }
+    }
 
     var body: some View {
         NavigationStack {
             VStack {
                 if dueItems.isEmpty {
-                    EmptyReviewsView()
+                    EmptyReviewsView(upcomingCount: upcomingItems.count)
                 } else {
                     ReviewQueueView(items: dueItems)
                 }
@@ -21,6 +39,8 @@ struct ReviewsView: View {
 }
 
 struct EmptyReviewsView: View {
+    var upcomingCount: Int = 0
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
@@ -31,9 +51,15 @@ struct EmptyReviewsView: View {
                 .font(.title2)
                 .fontWeight(.bold)
 
-            Text("No reviews due right now.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if upcomingCount > 0 {
+                Text("\(upcomingCount) reviews coming soon")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("No reviews due right now.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             NavigationLink(destination: LevelsView()) {
                 Text("Learn New Kanji")
@@ -87,7 +113,7 @@ struct ReviewQueueView: View {
             .padding(.horizontal)
 
             // Start button
-            NavigationLink(destination: ReviewSessionView()) {
+            NavigationLink(destination: ReviewSessionView(dueItems: items)) {
                 HStack {
                     Image(systemName: "play.fill")
                     Text("Start Reviews")

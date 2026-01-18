@@ -127,8 +127,21 @@ struct StatCard: View {
 }
 
 struct ReviewButton: View {
+    @Query(filter: #Predicate<KanjiProgress> { progress in
+        progress.nextReviewAt != nil
+    }, sort: \KanjiProgress.nextReviewAt) private var allItemsWithReviewDate: [KanjiProgress]
+
+    // Filter to only items that are actually due (nextReviewAt <= now)
+    private var dueItems: [KanjiProgress] {
+        let now = Date()
+        return allItemsWithReviewDate.filter { progress in
+            guard let reviewDate = progress.nextReviewAt else { return false }
+            return reviewDate <= now
+        }
+    }
+
     var body: some View {
-        NavigationLink(destination: ReviewSessionView()) {
+        NavigationLink(destination: ReviewSessionView(dueItems: dueItems)) {
             HStack {
                 Image(systemName: "brain.head.profile")
                     .font(.title2)
@@ -136,12 +149,18 @@ struct ReviewButton: View {
                 VStack(alignment: .leading) {
                     Text("Start Review")
                         .font(.headline)
-                    Text("0 items due")
+                    Text("\(dueItems.count) items due")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.8))
                 }
 
                 Spacer()
+
+                if dueItems.count > 0 {
+                    Text("\(dueItems.count)")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                }
 
                 Image(systemName: "chevron.right")
             }
@@ -149,7 +168,7 @@ struct ReviewButton: View {
             .padding()
             .background(
                 LinearGradient(
-                    colors: [.purple, .pink],
+                    colors: dueItems.isEmpty ? [.gray, .gray.opacity(0.8)] : [.purple, .pink],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
