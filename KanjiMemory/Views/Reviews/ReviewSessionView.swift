@@ -59,6 +59,8 @@ struct ReviewSessionView: View {
     @State private var sessionComplete = false
     @State private var isLoading = true
     @State private var showWrongIndicator = false  // Shows wrong answer but allows retry
+    @State private var showEndConfirmation = false  // End session confirmation dialog
+    @State private var showDetailSheet = false  // Tap character to view detail
 
     // Stats
     @State private var correctCount = 0
@@ -111,7 +113,9 @@ struct ReviewSessionView: View {
                     progress: progress,
                     onSubmit: checkAnswer,
                     onNext: nextQuestion,
-                    showWrongIndicator: showWrongIndicator
+                    showWrongIndicator: showWrongIndicator,
+                    onCharacterTap: { showDetailSheet = true },
+                    dataManager: dataManager
                 )
             } else {
                 SessionCompleteView(
@@ -125,12 +129,56 @@ struct ReviewSessionView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("End") {
-                    dismiss()
+                    showEndConfirmation = true
+                }
+            }
+        }
+        .confirmationDialog("End Session?", isPresented: $showEndConfirmation, titleVisibility: .visible) {
+            Button("End Session", role: .destructive) {
+                sessionComplete = true  // Shows SessionCompleteView with stats
+            }
+            Button("Resume", role: .cancel) { }
+        } message: {
+            Text("\(correctCount) correct, \(incorrectCount) incorrect so far")
+        }
+        .sheet(isPresented: $showDetailSheet) {
+            if let item = currentItem {
+                NavigationStack {
+                    detailView(for: item)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button("Done") { showDetailSheet = false }
+                            }
+                        }
                 }
             }
         }
         .task {
             await loadReviewItems()
+        }
+    }
+
+    @ViewBuilder
+    private func detailView(for item: ReviewItemState) -> some View {
+        switch item.subjectType {
+        case .kanji:
+            if let kanji = dataManager.getKanji(byCharacter: item.character) {
+                KanjiDetailView(kanji: kanji)
+            } else {
+                Text("Kanji not found")
+            }
+        case .radical:
+            if let radical = dataManager.getRadical(byId: item.subjectId) {
+                RadicalDetailView(radical: radical)
+            } else {
+                Text("Radical not found")
+            }
+        case .vocabulary:
+            if let vocab = dataManager.getVocabulary(byId: item.subjectId) {
+                VocabularyDetailView(vocabulary: vocab)
+            } else {
+                Text("Vocabulary not found")
+            }
         }
     }
 
@@ -303,9 +351,13 @@ struct ReviewSessionView: View {
         HapticManager.reviewAnswer(correct: wasCorrect)
 
         if wasCorrect {
-            // Correct: show result screen with Continue button
+            // Correct: show brief visual feedback then auto-advance
             showWrongIndicator = false
             showResult = true
+            // Auto-advance after brief visual feedback (no button tap needed)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                nextQuestion()
+            }
         } else {
             // Wrong: show indicator but allow retry (Tsurukame style)
             showWrongIndicator = true
@@ -477,7 +529,9 @@ struct ReviewCardView: View {
     let progress: Double
     let onSubmit: () -> Void
     let onNext: () -> Void
-    let showWrongIndicator: Bool  // NEW: Shows shake/red when wrong but allows retry
+    let showWrongIndicator: Bool  // Shows shake/red when wrong but allows retry
+    let onCharacterTap: () -> Void  // Tap character to view detail
+    let dataManager: DataManager
 
     @FocusState private var isInputFocused: Bool
     @State private var romajiBuffer = ""  // Raw romaji being typed
@@ -530,30 +584,36 @@ struct ReviewCardView: View {
             .padding(.horizontal)
             .padding(.top, 8)
 
-            // Character
-            Text(item.character)
-                .font(.system(size: 120))
-                .padding(.vertical, 40)
+            // Character - tappable to view detail
+            Button {
+                HapticManager.light()
+                onCharacterTap()
+            } label: {
+                Text(item.character)
+                    .font(.system(size: 120))
+                    .foregroundColor(.primary)
+            }
+            .buttonStyle(.plain)
+            .padding(.vertical, 40)
 
             Spacer()
 
-            // Answer section
+            // Answer section with improved dark mode styling
             VStack(spacing: 16) {
                 if showResult && isCorrect {
-                    // Show correct result - move to next
+                    // Show correct result - auto-advances after brief delay
                     VStack(spacing: 12) {
                         Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 50))
+                            .font(.system(size: 60))
                             .foregroundStyle(.green)
+                            .transition(.scale.combined(with: .opacity))
 
-                        Button("Continue") {
-                            onNext()
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.green)
-                        .padding(.top, 8)
+                        Text("Correct!")
+                            .font(.headline)
+                            .foregroundStyle(.green)
                     }
                     .padding()
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showResult)
                 } else {
                     // Input field (also shown when wrong to allow retry)
                     VStack(spacing: 8) {
@@ -574,40 +634,43 @@ struct ReviewCardView: View {
                         }
 
                         if questionType == .reading {
-                            // Single text field - shows kana as you type romaji
-                            TextField("ひらがなで入力...", text: Binding(
-                                get: { RomajiConverter.convertForDisplay(romajiBuffer) },
-                                set: { _ in }  // Read-only display
-                            ))
-                            .font(.title2)
-                            .multilineTextAlignment(.center)
-                            .disabled(true)
-                            .frame(height: 50)
-                            .background(showWrongIndicator ? Color.red.opacity(0.1) : Color(.systemBackground))
-                            .cornerRadius(10)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(showWrongIndicator ? Color.red : Color.gray.opacity(0.3), lineWidth: showWrongIndicator ? 2 : 1)
-                            )
-                            .offset(x: shakeOffset)
-                            .padding(.horizontal)
+                            // Single-line input like Tsurukame:
+                            // Shows kana display with hidden romaji input underneath
+                            ZStack {
+                                // Kana display (what user sees)
+                                Text(RomajiConverter.convertForDisplay(romajiBuffer).isEmpty ? "ひらがなで入力..." : RomajiConverter.convertForDisplay(romajiBuffer))
+                                    .font(.title2)
+                                    .foregroundColor(RomajiConverter.convertForDisplay(romajiBuffer).isEmpty ? .gray.opacity(0.5) : .primary)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 50)
+                                    .background(showWrongIndicator ? Color.red.opacity(0.1) : Color(.systemBackground))
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(showWrongIndicator ? Color.red : isInputFocused ? Color.purple : Color.gray.opacity(0.3), lineWidth: showWrongIndicator ? 2 : isInputFocused ? 2 : 1)
+                                    )
+                                    .offset(x: shakeOffset)
 
-                            // Actual input field for romaji (styled to blend in)
-                            TextField("Type romaji here...", text: $romajiBuffer)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .autocapitalization(.none)
-                                .autocorrectionDisabled()
-                                .focused($isInputFocused)
-                                .onSubmit {
-                                    userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
-                                    onSubmit()
-                                }
-                                .onChange(of: romajiBuffer) { _, _ in
-                                    userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
-                                }
-                                .padding(.horizontal, 40)
+                                // Hidden romaji input (captures keyboard)
+                                TextField("", text: $romajiBuffer)
+                                    .opacity(0.01)  // Nearly invisible but still captures input
+                                    .autocapitalization(.none)
+                                    .autocorrectionDisabled()
+                                    .focused($isInputFocused)
+                                    .onSubmit {
+                                        // Use finalize to convert trailing 'n' to 'ん' on submit
+                                        userAnswer = RomajiConverter.finalize(romajiBuffer)
+                                        onSubmit()
+                                    }
+                                    .onChange(of: romajiBuffer) { _, _ in
+                                        userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
+                                    }
+                            }
+                            .padding(.horizontal)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                isInputFocused = true
+                            }
                         } else {
                             // For meanings: standard text input
                             TextField("Enter meaning...", text: $userAnswer)
@@ -631,7 +694,8 @@ struct ReviewCardView: View {
 
                     Button("Submit") {
                         if questionType == .reading {
-                            userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
+                            // Use finalize to convert trailing 'n' to 'ん' on submit
+                            userAnswer = RomajiConverter.finalize(romajiBuffer)
                         }
                         onSubmit()
                     }
@@ -642,7 +706,18 @@ struct ReviewCardView: View {
                 }
             }
             .frame(maxHeight: 250)
-            .background(Color(.secondarySystemGroupedBackground))
+            .background(
+                // Glassmorphism for answer area
+                Color(.secondarySystemGroupedBackground)
+                    .overlay(
+                        // Subtle gradient overlay for visual interest
+                        LinearGradient(
+                            colors: [Color.purple.opacity(0.03), Color.clear],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            )
         }
         .background(Color(.systemBackground))
         .onAppear {

@@ -1,6 +1,23 @@
 import SwiftUI
 import SwiftData
 
+// Filter enum for review item types
+enum ReviewItemTypeFilter: String, CaseIterable {
+    case all = "All"
+    case radicals = "Radicals"
+    case kanji = "Kanji"
+    case vocabulary = "Vocab"
+
+    var color: Color {
+        switch self {
+        case .all: return .purple
+        case .radicals: return .blue
+        case .kanji: return .purple
+        case .vocabulary: return .green
+        }
+    }
+}
+
 // Unified review item for display
 struct DueReviewItem: Identifiable {
     enum ItemType {
@@ -14,6 +31,7 @@ struct DueReviewItem: Identifiable {
     let displayText: String
     let srsStage: SRSStage
     let nextReviewAt: Date
+    let level: Int  // For level filtering
 
     var typeIndicator: String {
         switch type {
@@ -45,18 +63,60 @@ struct ReviewsView: View {
 
     @StateObject private var dataManager = DataManager.shared
 
+    // Filter state
+    @State private var selectedTypeFilter: ReviewItemTypeFilter = .all
+    @State private var selectedLevelRange: ClosedRange<Int>? = nil  // nil = all levels
+
     // Cached computed values
     @State private var cachedDueItems: [DueReviewItem] = []
     @State private var cachedUpcomingCount: Int = 0
     @State private var lastRefresh: Date = .distantPast
 
+    // Filtered items based on current filter selection
+    private var filteredItems: [DueReviewItem] {
+        var items = cachedDueItems
+
+        // Filter by type
+        switch selectedTypeFilter {
+        case .all:
+            break
+        case .radicals:
+            items = items.filter { $0.type == .radical }
+        case .kanji:
+            items = items.filter { $0.type == .kanji }
+        case .vocabulary:
+            items = items.filter { $0.type == .vocabulary }
+        }
+
+        // Filter by level range
+        if let range = selectedLevelRange {
+            items = items.filter { range.contains($0.level) }
+        }
+
+        return items
+    }
+
+    // Count by type for filter badges
+    private var radicalCount: Int { cachedDueItems.filter { $0.type == .radical }.count }
+    private var kanjiCount: Int { cachedDueItems.filter { $0.type == .kanji }.count }
+    private var vocabCount: Int { cachedDueItems.filter { $0.type == .vocabulary }.count }
+
     var body: some View {
         NavigationStack {
-            VStack {
+            VStack(spacing: 0) {
+                // Filter bar
+                if !cachedDueItems.isEmpty {
+                    reviewFilterBar
+                }
+
+                // Content
                 if cachedDueItems.isEmpty {
                     EmptyReviewsView(upcomingCount: cachedUpcomingCount)
+                } else if filteredItems.isEmpty {
+                    // All items filtered out
+                    noMatchingItemsView
                 } else {
-                    ReviewQueueView(items: cachedDueItems)
+                    ReviewQueueView(items: filteredItems)
                 }
             }
             .navigationTitle("Reviews")
@@ -69,6 +129,109 @@ struct ReviewsView: View {
         .onChange(of: vocabProgress.count) { _, _ in refreshIfNeeded() }
     }
 
+    // MARK: - Filter Bar
+    private var reviewFilterBar: some View {
+        VStack(spacing: 8) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    // Type filters
+                    ForEach(ReviewItemTypeFilter.allCases, id: \.self) { filter in
+                        FilterChip(
+                            label: filterLabel(for: filter),
+                            isSelected: selectedTypeFilter == filter,
+                            color: filter.color
+                        ) {
+                            HapticManager.selection()
+                            selectedTypeFilter = filter
+                        }
+                    }
+
+                    Divider()
+                        .frame(height: 24)
+
+                    // Level filter menu
+                    Menu {
+                        Button("All Levels") {
+                            selectedLevelRange = nil
+                        }
+                        Divider()
+                        Button("Level 1-10") {
+                            selectedLevelRange = 1...10
+                        }
+                        Button("Level 11-20") {
+                            selectedLevelRange = 11...20
+                        }
+                        Button("Level 21-30") {
+                            selectedLevelRange = 21...30
+                        }
+                        Button("Level 31-40") {
+                            selectedLevelRange = 31...40
+                        }
+                        Button("Level 41-50") {
+                            selectedLevelRange = 41...50
+                        }
+                        Button("Level 51-60") {
+                            selectedLevelRange = 51...60
+                        }
+                    } label: {
+                        FilterChip(
+                            label: levelFilterLabel,
+                            isSelected: selectedLevelRange != nil,
+                            color: .purple
+                        ) {}
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .padding(.vertical, 8)
+        .background(Color(.secondarySystemGroupedBackground))
+    }
+
+    private func filterLabel(for filter: ReviewItemTypeFilter) -> String {
+        switch filter {
+        case .all:
+            return "All (\(cachedDueItems.count))"
+        case .radicals:
+            return "R (\(radicalCount))"
+        case .kanji:
+            return "K (\(kanjiCount))"
+        case .vocabulary:
+            return "V (\(vocabCount))"
+        }
+    }
+
+    private var levelFilterLabel: String {
+        if let range = selectedLevelRange {
+            return "Lvl \(range.lowerBound)-\(range.upperBound)"
+        }
+        return "All Levels"
+    }
+
+    // MARK: - No Matching Items View
+    private var noMatchingItemsView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "line.3.horizontal.decrease.circle")
+                .font(.system(size: 50))
+                .foregroundStyle(.secondary)
+
+            Text("No matching reviews")
+                .font(.headline)
+
+            Text("Try adjusting your filters")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            Button("Clear Filters") {
+                selectedTypeFilter = .all
+                selectedLevelRange = nil
+            }
+            .buttonStyle(.bordered)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemGroupedBackground))
+    }
+
     private func refreshIfNeeded() {
         // Only refresh if data changed or more than 1 second since last refresh
         guard Date().timeIntervalSince(lastRefresh) > 1 else { return }
@@ -77,6 +240,7 @@ struct ReviewsView: View {
         // Build lookup dictionaries for fast access (O(1) instead of O(n))
         let radicalLookup = Dictionary(uniqueKeysWithValues: dataManager.allRadicals.map { ($0.id, $0) })
         let vocabLookup = Dictionary(uniqueKeysWithValues: dataManager.allVocabulary.map { ($0.id, $0) })
+        let kanjiLookup = Dictionary(uniqueKeysWithValues: dataManager.allKanji.map { ($0.character, $0) })
 
         let now = Date()
         var items: [DueReviewItem] = []
@@ -92,7 +256,8 @@ struct ReviewsView: View {
                         type: .radical,
                         displayText: radical.displayCharacter,
                         srsStage: progress.srs,
-                        nextReviewAt: reviewDate
+                        nextReviewAt: reviewDate,
+                        level: radical.level
                     ))
                 }
             } else {
@@ -100,16 +265,18 @@ struct ReviewsView: View {
             }
         }
 
-        // Process kanji (no lookup needed - character is stored in progress)
+        // Process kanji
         for progress in kanjiProgress {
             guard let reviewDate = progress.nextReviewAt else { continue }
             if reviewDate <= now {
+                let level = kanjiLookup[progress.character]?.level ?? progress.level
                 items.append(DueReviewItem(
                     id: "kanji-\(progress.character)",
                     type: .kanji,
                     displayText: progress.character,
                     srsStage: progress.srs,
-                    nextReviewAt: reviewDate
+                    nextReviewAt: reviewDate,
+                    level: level
                 ))
             } else {
                 upcoming += 1
@@ -126,7 +293,8 @@ struct ReviewsView: View {
                         type: .vocabulary,
                         displayText: vocab.characters,
                         srsStage: progress.srs,
-                        nextReviewAt: reviewDate
+                        nextReviewAt: reviewDate,
+                        level: vocab.level
                     ))
                 }
             } else {
@@ -184,12 +352,19 @@ struct ReviewQueueView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Stats header
+            // Stats header with glassmorphism
             HStack(spacing: 24) {
                 VStack {
                     Text("\(items.count)")
                         .font(.title)
                         .fontWeight(.bold)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.purple, .pink],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                     Text("Due")
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -208,10 +383,7 @@ struct ReviewQueueView: View {
                 }
             }
             .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.secondarySystemGroupedBackground))
-            )
+            .glassCard()
             .padding(.horizontal)
 
             // Start button

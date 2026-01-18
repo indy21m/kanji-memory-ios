@@ -148,6 +148,7 @@ struct StatsCards: View {
 }
 
 struct StatCard: View {
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let value: String
     let icon: String
@@ -176,10 +177,7 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.secondarySystemGroupedBackground))
-        )
+        .glassCard()
     }
 }
 
@@ -290,10 +288,7 @@ struct CurrentLevelCard: View {
             }
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.secondarySystemGroupedBackground))
-        )
+        .glassCard()
     }
 }
 
@@ -337,10 +332,7 @@ struct RecentActivityCard: View {
             }
         }
         .padding()
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.secondarySystemGroupedBackground))
-        )
+        .glassCard()
     }
 }
 

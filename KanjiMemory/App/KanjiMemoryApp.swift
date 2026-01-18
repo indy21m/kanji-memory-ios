@@ -30,9 +30,28 @@ struct KanjiMemoryApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ThemedContentView()
                 .environmentObject(authManager)
         }
         .modelContainer(modelContainer)
+    }
+}
+
+/// Wrapper view that applies the user's preferred color scheme
+/// Uses @AppStorage for immediate reactivity when theme changes
+struct ThemedContentView: View {
+    @AppStorage("appTheme") private var appTheme = "system"
+
+    private var colorScheme: ColorScheme? {
+        switch appTheme {
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil  // System default
+        }
+    }
+
+    var body: some View {
+        ContentView()
+            .preferredColorScheme(colorScheme)
     }
 }

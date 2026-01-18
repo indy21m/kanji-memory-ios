@@ -22,13 +22,13 @@ struct ContentView: View {
 
                     LevelsView()
                         .tabItem {
-                            Label("Levels", systemImage: "square.grid.3x3.fill")
+                            Label("Levels", systemImage: "books.vertical.fill")
                         }
                         .tag(1)
 
                     ReviewsView()
                         .tabItem {
-                            Label("Reviews", systemImage: "brain.head.profile")
+                            Label("Reviews", systemImage: "flame.fill")
                         }
                         .tag(2)
 

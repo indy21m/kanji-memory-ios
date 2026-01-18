@@ -47,6 +47,9 @@ struct SettingsView: View {
     @State private var fuzzyMatchingEnabled = true
     @State private var autoConvertKatakana = true
 
+    // Appearance settings - use @AppStorage for immediate theme updates
+    @AppStorage("appTheme") private var selectedTheme = "system"
+
     private var settings: UserSettings {
         if let existing = userSettings.first {
             return existing
@@ -74,6 +77,9 @@ struct SettingsView: View {
 
                     // Review Settings section (like Tsurukame)
                     reviewSettingsSection
+
+                    // Appearance section
+                    appearanceSection
 
                     // Mnemonic Style section
                     mnemonicStyleSection
@@ -333,6 +339,42 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: - Appearance Section
+    private var appearanceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Appearance", emoji: "🎨")
+
+            VStack(spacing: 0) {
+                Picker("Theme", selection: $selectedTheme) {
+                    HStack {
+                        Image(systemName: "iphone")
+                        Text("System")
+                    }
+                    .tag("system")
+
+                    HStack {
+                        Image(systemName: "sun.max.fill")
+                        Text("Light")
+                    }
+                    .tag("light")
+
+                    HStack {
+                        Image(systemName: "moon.fill")
+                        Text("Dark")
+                    }
+                    .tag("dark")
+                }
+                .pickerStyle(.segmented)
+                .padding()
+                .onChange(of: selectedTheme) { _, _ in
+                    saveTheme()
+                }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+    }
+
     // MARK: - Mnemonic Style Section
     private var mnemonicStyleSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -538,6 +580,16 @@ struct SettingsView: View {
         groupMeaningReading = reviewPrefs.groupMeaningReading
         fuzzyMatchingEnabled = reviewPrefs.fuzzyMatchingEnabled
         autoConvertKatakana = reviewPrefs.autoConvertKatakana
+
+        // Load theme
+        selectedTheme = settings.theme
+    }
+
+    private func saveTheme() {
+        // @AppStorage handles the immediate UI update
+        // Also save to SwiftData for backup/sync
+        settings.theme = selectedTheme
+        try? modelContext.save()
     }
 
     private func saveSettings() {
