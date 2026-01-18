@@ -133,15 +133,28 @@ struct ReviewSessionView: View {
     }
 
     private func loadReviewItems() async {
+        // Ensure DataManager has loaded its data
+        if !dataManager.isLoaded {
+            await dataManager.loadBundledData()
+        }
+
         let now = Date()
         var items: [ReviewItemState] = []
 
-        // Query for due radicals
+        print("🔍 Loading review items at \(now)")
+        print("📚 DataManager loaded: \(dataManager.isLoaded), radicals: \(dataManager.allRadicals.count), kanji: \(dataManager.allKanji.count), vocab: \(dataManager.allVocabulary.count)")
+
+        // Query for due radicals - fetch ALL then filter (SwiftData predicate workaround)
         let radicalDescriptor = FetchDescriptor<RadicalProgress>(
-            predicate: #Predicate { $0.nextReviewAt != nil && $0.nextReviewAt! <= now },
             sortBy: [SortDescriptor(\.nextReviewAt)]
         )
-        if let dueRadicals = try? modelContext.fetch(radicalDescriptor) {
+        if let allRadicals = try? modelContext.fetch(radicalDescriptor) {
+            let dueRadicals = allRadicals.filter { progress in
+                guard let reviewAt = progress.nextReviewAt else { return false }
+                return reviewAt <= now
+            }
+            print("📖 Radicals: \(allRadicals.count) total, \(dueRadicals.count) due")
+
             for progress in dueRadicals {
                 if let radical = dataManager.allRadicals.first(where: { $0.id == progress.radicalId }) {
                     items.append(ReviewItemState(
@@ -156,12 +169,17 @@ struct ReviewSessionView: View {
             }
         }
 
-        // Query for due kanji
+        // Query for due kanji - fetch ALL then filter
         let kanjiDescriptor = FetchDescriptor<KanjiProgress>(
-            predicate: #Predicate { $0.nextReviewAt != nil && $0.nextReviewAt! <= now },
             sortBy: [SortDescriptor(\.nextReviewAt)]
         )
-        if let dueKanji = try? modelContext.fetch(kanjiDescriptor) {
+        if let allKanji = try? modelContext.fetch(kanjiDescriptor) {
+            let dueKanji = allKanji.filter { progress in
+                guard let reviewAt = progress.nextReviewAt else { return false }
+                return reviewAt <= now
+            }
+            print("📖 Kanji: \(allKanji.count) total, \(dueKanji.count) due")
+
             for progress in dueKanji {
                 if let kanji = dataManager.getKanji(byCharacter: progress.character) {
                     items.append(ReviewItemState(
@@ -176,12 +194,17 @@ struct ReviewSessionView: View {
             }
         }
 
-        // Query for due vocabulary
+        // Query for due vocabulary - fetch ALL then filter
         let vocabDescriptor = FetchDescriptor<VocabularyProgress>(
-            predicate: #Predicate { $0.nextReviewAt != nil && $0.nextReviewAt! <= now },
             sortBy: [SortDescriptor(\.nextReviewAt)]
         )
-        if let dueVocab = try? modelContext.fetch(vocabDescriptor) {
+        if let allVocab = try? modelContext.fetch(vocabDescriptor) {
+            let dueVocab = allVocab.filter { progress in
+                guard let reviewAt = progress.nextReviewAt else { return false }
+                return reviewAt <= now
+            }
+            print("📖 Vocabulary: \(allVocab.count) total, \(dueVocab.count) due")
+
             for progress in dueVocab {
                 if let vocab = dataManager.allVocabulary.first(where: { $0.id == progress.vocabularyId }) {
                     items.append(ReviewItemState(
@@ -196,7 +219,10 @@ struct ReviewSessionView: View {
             }
         }
 
+        print("✅ Total review items found: \(items.count)")
+
         guard !items.isEmpty else {
+            print("⚠️ No review items found, marking session complete")
             sessionComplete = true
             isLoading = false
             return
