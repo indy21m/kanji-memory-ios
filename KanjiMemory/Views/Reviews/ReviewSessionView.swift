@@ -58,6 +58,7 @@ struct ReviewSessionView: View {
     @State private var isCorrect = false
     @State private var sessionComplete = false
     @State private var isLoading = true
+    @State private var showWrongIndicator = false  // Shows wrong answer but allows retry
 
     // Stats
     @State private var correctCount = 0
@@ -109,7 +110,8 @@ struct ReviewSessionView: View {
                     isCorrect: isCorrect,
                     progress: progress,
                     onSubmit: checkAnswer,
-                    onNext: nextQuestion
+                    onNext: nextQuestion,
+                    showWrongIndicator: showWrongIndicator
                 )
             } else {
                 SessionCompleteView(
@@ -248,6 +250,7 @@ struct ReviewSessionView: View {
         guard currentIndex < reviewItems.count else { return }
 
         var item = reviewItems[currentIndex]
+        var wasCorrect = false
 
         switch currentQuestionType {
         case .meaning:
@@ -260,16 +263,15 @@ struct ReviewSessionView: View {
 
             switch result {
             case .correct, .almostCorrect:
-                isCorrect = true
+                wasCorrect = true
                 item.meaningAnswered = true
                 item.meaningCorrect = true
+                correctCount += 1
             case .incorrect, .containsInvalidCharacters, .otherAcceptableReading:
-                isCorrect = false
-                item.meaningWrongCount += 1  // Track wrong count
-                // Only mark as answered if correct (like Tsurukame)
-                // This means user must answer correctly to proceed
-                item.meaningAnswered = true  // For now, mark answered to proceed
-                item.meaningCorrect = false
+                wasCorrect = false
+                item.meaningWrongCount += 1  // Track wrong count for SRS
+                incorrectCount += 1
+                // DON'T mark as answered - user must retry (Tsurukame style)
             }
 
         case .reading:
@@ -281,40 +283,41 @@ struct ReviewSessionView: View {
             )
 
             switch result {
-            case .correct, .otherAcceptableReading:
-                isCorrect = true
+            case .correct, .otherAcceptableReading, .almostCorrect:
+                wasCorrect = true
                 item.readingAnswered = true
                 item.readingCorrect = true
-            case .almostCorrect:
-                // For readings, almostCorrect isn't used, but handle it
-                isCorrect = true
-                item.readingAnswered = true
-                item.readingCorrect = true
+                correctCount += 1
             case .incorrect, .containsInvalidCharacters:
-                isCorrect = false
-                item.readingWrongCount += 1  // Track wrong count
-                item.readingAnswered = true
-                item.readingCorrect = false
+                wasCorrect = false
+                item.readingWrongCount += 1  // Track wrong count for SRS
+                incorrectCount += 1
+                // DON'T mark as answered - user must retry (Tsurukame style)
             }
         }
 
         reviewItems[currentIndex] = item
-
-        if isCorrect {
-            correctCount += 1
-        } else {
-            incorrectCount += 1
-        }
+        isCorrect = wasCorrect
 
         // Haptic feedback based on answer correctness
-        HapticManager.reviewAnswer(correct: isCorrect)
+        HapticManager.reviewAnswer(correct: wasCorrect)
 
-        showResult = true
+        if wasCorrect {
+            // Correct: show result screen with Continue button
+            showWrongIndicator = false
+            showResult = true
+        } else {
+            // Wrong: show indicator but allow retry (Tsurukame style)
+            showWrongIndicator = true
+            showResult = false  // Keep input visible for retry
+            userAnswer = ""  // Clear input for retry
+        }
     }
 
     private func nextQuestion() {
         HapticManager.light()
         showResult = false
+        showWrongIndicator = false
         userAnswer = ""
 
         guard currentIndex < reviewItems.count else {
@@ -474,17 +477,11 @@ struct ReviewCardView: View {
     let progress: Double
     let onSubmit: () -> Void
     let onNext: () -> Void
+    let showWrongIndicator: Bool  // NEW: Shows shake/red when wrong but allows retry
 
     @FocusState private var isInputFocused: Bool
-    @State private var romajiInput = ""
-
-    // Display text: for readings, show converted kana; for meanings, show raw input
-    private var displayText: String {
-        if questionType == .reading {
-            return RomajiConverter.convertForDisplay(romajiInput)
-        }
-        return userAnswer
-    }
+    @State private var romajiBuffer = ""  // Raw romaji being typed
+    @State private var shakeOffset: CGFloat = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -542,96 +539,109 @@ struct ReviewCardView: View {
 
             // Answer section
             VStack(spacing: 16) {
-                if showResult {
-                    // Show result
+                if showResult && isCorrect {
+                    // Show correct result - move to next
                     VStack(spacing: 12) {
-                        Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 50))
-                            .foregroundStyle(isCorrect ? .green : .red)
-
-                        if !isCorrect {
-                            Text("Correct answer:")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-
-                            Text(questionType == .meaning ?
-                                 item.meanings.joined(separator: ", ") :
-                                 item.readings.joined(separator: ", "))
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                        }
+                            .foregroundStyle(.green)
 
                         Button("Continue") {
                             onNext()
                         }
                         .buttonStyle(.borderedProminent)
-                        .tint(isCorrect ? .green : .purple)
+                        .tint(.green)
                         .padding(.top, 8)
                     }
                     .padding()
                 } else {
-                    // Input field
-                    if questionType == .reading {
-                        // For readings: show converted kana, input romaji
-                        VStack(spacing: 8) {
-                            // Display converted kana
-                            Text(displayText.isEmpty ? " " : displayText)
-                                .font(.title2)
-                                .foregroundColor(.primary)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 44)
-                                .background(Color(.systemBackground))
-                                .cornerRadius(8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                )
-                                .padding(.horizontal)
+                    // Input field (also shown when wrong to allow retry)
+                    VStack(spacing: 8) {
+                        // Show correct answer when wrong (like Tsurukame)
+                        if showWrongIndicator {
+                            VStack(spacing: 4) {
+                                Text("Correct answer:")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(questionType == .meaning ?
+                                     item.meanings.joined(separator: ", ") :
+                                     item.readings.joined(separator: ", "))
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.red)
+                            }
+                            .padding(.bottom, 4)
+                        }
 
-                            // Hidden-ish romaji input
-                            TextField("Type in romaji (e.g., 'ka' → か)", text: $romajiInput)
-                                .textFieldStyle(.roundedBorder)
+                        if questionType == .reading {
+                            // Single text field - shows kana as you type romaji
+                            TextField("ひらがなで入力...", text: Binding(
+                                get: { RomajiConverter.convertForDisplay(romajiBuffer) },
+                                set: { _ in }  // Read-only display
+                            ))
+                            .font(.title2)
+                            .multilineTextAlignment(.center)
+                            .disabled(true)
+                            .frame(height: 50)
+                            .background(showWrongIndicator ? Color.red.opacity(0.1) : Color(.systemBackground))
+                            .cornerRadius(10)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(showWrongIndicator ? Color.red : Color.gray.opacity(0.3), lineWidth: showWrongIndicator ? 2 : 1)
+                            )
+                            .offset(x: shakeOffset)
+                            .padding(.horizontal)
+
+                            // Actual input field for romaji (styled to blend in)
+                            TextField("Type romaji here...", text: $romajiBuffer)
                                 .font(.caption)
+                                .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
                                 .autocapitalization(.none)
                                 .autocorrectionDisabled()
                                 .focused($isInputFocused)
                                 .onSubmit {
-                                    // Convert and set the answer before submitting
-                                    userAnswer = RomajiConverter.convertForDisplay(romajiInput)
+                                    userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
                                     onSubmit()
                                 }
-                                .onChange(of: romajiInput) { _, _ in
-                                    // Keep userAnswer in sync for answer checking
-                                    userAnswer = RomajiConverter.convertForDisplay(romajiInput)
+                                .onChange(of: romajiBuffer) { _, _ in
+                                    userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
                                 }
+                                .padding(.horizontal, 40)
+                        } else {
+                            // For meanings: standard text input
+                            TextField("Enter meaning...", text: $userAnswer)
+                                .font(.title2)
+                                .multilineTextAlignment(.center)
+                                .autocapitalization(.none)
+                                .focused($isInputFocused)
+                                .onSubmit(onSubmit)
+                                .frame(height: 50)
+                                .padding(.horizontal, 8)
+                                .background(showWrongIndicator ? Color.red.opacity(0.1) : Color(.systemBackground))
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(showWrongIndicator ? Color.red : Color.gray.opacity(0.3), lineWidth: showWrongIndicator ? 2 : 1)
+                                )
+                                .offset(x: shakeOffset)
                                 .padding(.horizontal)
                         }
-                    } else {
-                        // For meanings: standard text input
-                        TextField("Enter meaning...", text: $userAnswer)
-                            .textFieldStyle(.roundedBorder)
-                            .font(.title3)
-                            .multilineTextAlignment(.center)
-                            .autocapitalization(.none)
-                            .focused($isInputFocused)
-                            .onSubmit(onSubmit)
-                            .padding(.horizontal)
                     }
 
                     Button("Submit") {
                         if questionType == .reading {
-                            userAnswer = RomajiConverter.convertForDisplay(romajiInput)
+                            userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
                         }
                         onSubmit()
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.purple)
-                    .disabled(questionType == .reading ? romajiInput.isEmpty : userAnswer.isEmpty)
+                    .tint(showWrongIndicator ? .orange : .purple)
+                    .disabled(questionType == .reading ? romajiBuffer.isEmpty : userAnswer.isEmpty)
                     .padding()
                 }
             }
-            .frame(maxHeight: 200)
+            .frame(maxHeight: 250)
             .background(Color(.secondarySystemGroupedBackground))
         }
         .background(Color(.systemBackground))
@@ -639,9 +649,20 @@ struct ReviewCardView: View {
             isInputFocused = true
         }
         .onChange(of: userAnswer) { _, newValue in
-            // Reset romajiInput when userAnswer is cleared (next question)
+            // Reset romajiBuffer when userAnswer is cleared (next question)
             if newValue.isEmpty {
-                romajiInput = ""
+                romajiBuffer = ""
+            }
+        }
+        .onChange(of: showWrongIndicator) { _, isWrong in
+            // Shake animation when wrong
+            if isWrong {
+                withAnimation(.default.repeatCount(3, autoreverses: true).speed(6)) {
+                    shakeOffset = 10
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    shakeOffset = 0
+                }
             }
         }
     }
