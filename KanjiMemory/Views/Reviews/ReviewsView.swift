@@ -1,34 +1,112 @@
 import SwiftUI
 import SwiftData
 
-struct ReviewsView: View {
-    @Query(filter: #Predicate<KanjiProgress> { progress in
-        progress.nextReviewAt != nil
-    }, sort: \KanjiProgress.nextReviewAt) private var allItemsWithReviewDate: [KanjiProgress]
+// Unified review item for display
+struct DueReviewItem: Identifiable {
+    enum ItemType {
+        case radical
+        case kanji
+        case vocabulary
+    }
 
-    // Filter for items that are actually due NOW (nextReviewAt <= current time)
-    private var dueItems: [KanjiProgress] {
-        let now = Date()
-        return allItemsWithReviewDate.filter { progress in
-            guard let reviewDate = progress.nextReviewAt else { return false }
-            return reviewDate <= now
+    let id: String
+    let type: ItemType
+    let displayText: String
+    let srsStage: SRSStage
+    let nextReviewAt: Date
+
+    var typeIndicator: String {
+        switch type {
+        case .radical: return "R"
+        case .kanji: return "K"
+        case .vocabulary: return "V"
         }
     }
 
-    // Items with future review dates (for display purposes)
-    private var upcomingItems: [KanjiProgress] {
-        let now = Date()
-        return allItemsWithReviewDate.filter { progress in
-            guard let reviewDate = progress.nextReviewAt else { return false }
-            return reviewDate > now
+    var typeColor: Color {
+        switch type {
+        case .radical: return .blue
+        case .kanji: return .purple
+        case .vocabulary: return .green
         }
+    }
+}
+
+struct ReviewsView: View {
+    // Query all three progress types
+    @Query(filter: #Predicate<KanjiProgress> { $0.nextReviewAt != nil },
+           sort: \KanjiProgress.nextReviewAt) private var kanjiProgress: [KanjiProgress]
+
+    @Query(filter: #Predicate<RadicalProgress> { $0.nextReviewAt != nil },
+           sort: \RadicalProgress.nextReviewAt) private var radicalProgress: [RadicalProgress]
+
+    @Query(filter: #Predicate<VocabularyProgress> { $0.nextReviewAt != nil },
+           sort: \VocabularyProgress.nextReviewAt) private var vocabProgress: [VocabularyProgress]
+
+    @StateObject private var dataManager = DataManager.shared
+
+    // Combine all due items
+    private var dueItems: [DueReviewItem] {
+        let now = Date()
+        var items: [DueReviewItem] = []
+
+        // Add due radicals
+        for progress in radicalProgress {
+            guard let reviewDate = progress.nextReviewAt, reviewDate <= now else { continue }
+            if let radical = dataManager.allRadicals.first(where: { $0.id == progress.radicalId }) {
+                items.append(DueReviewItem(
+                    id: "radical-\(progress.radicalId)",
+                    type: .radical,
+                    displayText: radical.displayCharacter,
+                    srsStage: progress.srs,
+                    nextReviewAt: reviewDate
+                ))
+            }
+        }
+
+        // Add due kanji
+        for progress in kanjiProgress {
+            guard let reviewDate = progress.nextReviewAt, reviewDate <= now else { continue }
+            items.append(DueReviewItem(
+                id: "kanji-\(progress.character)",
+                type: .kanji,
+                displayText: progress.character,
+                srsStage: progress.srs,
+                nextReviewAt: reviewDate
+            ))
+        }
+
+        // Add due vocabulary
+        for progress in vocabProgress {
+            guard let reviewDate = progress.nextReviewAt, reviewDate <= now else { continue }
+            if let vocab = dataManager.allVocabulary.first(where: { $0.id == progress.vocabularyId }) {
+                items.append(DueReviewItem(
+                    id: "vocab-\(progress.vocabularyId)",
+                    type: .vocabulary,
+                    displayText: vocab.characters,
+                    srsStage: progress.srs,
+                    nextReviewAt: reviewDate
+                ))
+            }
+        }
+
+        return items.sorted { $0.nextReviewAt < $1.nextReviewAt }
+    }
+
+    // Count upcoming items
+    private var upcomingCount: Int {
+        let now = Date()
+        let radicalUpcoming = radicalProgress.filter { ($0.nextReviewAt ?? .distantFuture) > now }.count
+        let kanjiUpcoming = kanjiProgress.filter { ($0.nextReviewAt ?? .distantFuture) > now }.count
+        let vocabUpcoming = vocabProgress.filter { ($0.nextReviewAt ?? .distantFuture) > now }.count
+        return radicalUpcoming + kanjiUpcoming + vocabUpcoming
     }
 
     var body: some View {
         NavigationStack {
             VStack {
                 if dueItems.isEmpty {
-                    EmptyReviewsView(upcomingCount: upcomingItems.count)
+                    EmptyReviewsView(upcomingCount: upcomingCount)
                 } else {
                     ReviewQueueView(items: dueItems)
                 }
@@ -79,7 +157,7 @@ struct EmptyReviewsView: View {
 }
 
 struct ReviewQueueView: View {
-    let items: [KanjiProgress]
+    let items: [DueReviewItem]
 
     var body: some View {
         VStack(spacing: 16) {
@@ -138,19 +216,23 @@ struct ReviewQueueView: View {
             List {
                 ForEach(items.prefix(20)) { item in
                     HStack {
-                        Text(item.character)
+                        Text(item.displayText)
                             .font(.title2)
-                            .frame(width: 40)
+                            .frame(minWidth: 40)
 
-                        VStack(alignment: .leading) {
-                            Text("Level \(item.level)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                        // Type indicator
+                        Text(item.typeIndicator)
+                            .font(.caption2)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(item.typeColor)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
 
                         Spacer()
 
-                        SRSBadge(stage: item.srs)
+                        SRSBadge(stage: item.srsStage)
                     }
                     .padding(.vertical, 4)
                 }
@@ -163,5 +245,5 @@ struct ReviewQueueView: View {
 
 #Preview {
     ReviewsView()
-        .modelContainer(for: [KanjiProgress.self], inMemory: true)
+        .modelContainer(for: [KanjiProgress.self, RadicalProgress.self, VocabularyProgress.self], inMemory: true)
 }

@@ -567,52 +567,105 @@ struct SettingsView: View {
                 let user = try await WaniKaniService.shared.fetchUser()
                 print("WaniKani user level: \(user.level)")
 
-                // Fetch all kanji assignments
-                let assignments = try await WaniKaniService.shared.fetchAssignments(subjectTypes: ["kanji"])
-                print("Fetched \(assignments.count) kanji assignments")
+                // Fetch ALL assignments (radicals, kanji, vocabulary)
+                let assignments = try await WaniKaniService.shared.fetchAssignments(subjectTypes: ["radical", "kanji", "vocabulary"])
+                print("Fetched \(assignments.count) total assignments")
 
-                // Get DataManager for looking up kanji by wanikaniId
+                // Get DataManager for looking up items by ID
                 let dataManager = await DataManager.shared
 
-                // Update or create KanjiProgress for each assignment
+                // Group assignments by type
+                let radicalAssignments = assignments.filter { $0.data.subjectType == "radical" }
+                let kanjiAssignments = assignments.filter { $0.data.subjectType == "kanji" }
+                let vocabAssignments = assignments.filter { $0.data.subjectType == "vocabulary" }
+
+                print("Radicals: \(radicalAssignments.count), Kanji: \(kanjiAssignments.count), Vocabulary: \(vocabAssignments.count)")
+
+                // Update progress for each type
                 await MainActor.run {
-                    var updated = 0
-                    for assignment in assignments {
+                    var radicalCount = 0
+                    var kanjiCount = 0
+                    var vocabCount = 0
+
+                    // Process radicals
+                    for assignment in radicalAssignments {
                         let subjectId = assignment.data.subjectId
                         let srsStage = assignment.data.srsStage
-                        let assignmentId = assignment.id  // Store assignment ID for review submission
+                        let assignmentId = assignment.id
 
-                        // Find the kanji by wanikaniId
-                        if let kanji = dataManager.allKanji.first(where: { $0.wanikaniId == subjectId }) {
-                            // Check if progress exists
-                            let existingProgress = userSettings.first?.id != nil ?
-                                fetchProgress(for: kanji.character) : nil
-
-                            if let progress = existingProgress {
-                                // Update existing progress
+                        if dataManager.allRadicals.contains(where: { $0.id == subjectId }) {
+                            if let progress = fetchRadicalProgress(for: subjectId) {
                                 progress.srsStage = srsStage
-                                progress.wanikaniAssignmentId = assignmentId  // Store assignment ID
-                                // Set nextReviewAt from availableAt (handles fractional seconds), or nil for burned items
+                                progress.wanikaniAssignmentId = assignmentId
                                 progress.nextReviewAt = WaniKaniService.parseDate(assignment.data.availableAt)
                                 progress.updatedAt = Date()
                             } else {
-                                // Create new progress
+                                let newProgress = RadicalProgress(
+                                    radicalId: subjectId,
+                                    srsStage: SRSStage(rawValue: srsStage) ?? .lesson,
+                                    nextReviewAt: WaniKaniService.parseDate(assignment.data.availableAt),
+                                    wanikaniAssignmentId: assignmentId
+                                )
+                                modelContext.insert(newProgress)
+                            }
+                            radicalCount += 1
+                        }
+                    }
+
+                    // Process kanji
+                    for assignment in kanjiAssignments {
+                        let subjectId = assignment.data.subjectId
+                        let srsStage = assignment.data.srsStage
+                        let assignmentId = assignment.id
+
+                        if let kanji = dataManager.allKanji.first(where: { $0.wanikaniId == subjectId }) {
+                            if let progress = fetchKanjiProgress(for: kanji.character) {
+                                progress.srsStage = srsStage
+                                progress.wanikaniAssignmentId = assignmentId
+                                progress.nextReviewAt = WaniKaniService.parseDate(assignment.data.availableAt)
+                                progress.updatedAt = Date()
+                            } else {
                                 let newProgress = KanjiProgress(
                                     character: kanji.character,
                                     level: kanji.level,
                                     srsStage: SRSStage(rawValue: srsStage) ?? .lesson,
                                     nextReviewAt: WaniKaniService.parseDate(assignment.data.availableAt),
                                     wanikaniId: subjectId,
-                                    wanikaniAssignmentId: assignmentId  // Store assignment ID
+                                    wanikaniAssignmentId: assignmentId
                                 )
                                 modelContext.insert(newProgress)
                             }
-                            updated += 1
+                            kanjiCount += 1
+                        }
+                    }
+
+                    // Process vocabulary
+                    for assignment in vocabAssignments {
+                        let subjectId = assignment.data.subjectId
+                        let srsStage = assignment.data.srsStage
+                        let assignmentId = assignment.id
+
+                        if dataManager.allVocabulary.contains(where: { $0.id == subjectId }) {
+                            if let progress = fetchVocabProgress(for: subjectId) {
+                                progress.srsStage = srsStage
+                                progress.wanikaniAssignmentId = assignmentId
+                                progress.nextReviewAt = WaniKaniService.parseDate(assignment.data.availableAt)
+                                progress.updatedAt = Date()
+                            } else {
+                                let newProgress = VocabularyProgress(
+                                    vocabularyId: subjectId,
+                                    srsStage: SRSStage(rawValue: srsStage) ?? .lesson,
+                                    nextReviewAt: WaniKaniService.parseDate(assignment.data.availableAt),
+                                    wanikaniAssignmentId: assignmentId
+                                )
+                                modelContext.insert(newProgress)
+                            }
+                            vocabCount += 1
                         }
                     }
 
                     try? modelContext.save()
-                    syncMessage = "Synced \(updated) kanji from WaniKani"
+                    syncMessage = "Synced \(radicalCount) radicals, \(kanjiCount) kanji, \(vocabCount) vocabulary"
                     isSyncing = false
                     HapticManager.success()
                 }
@@ -627,9 +680,23 @@ struct SettingsView: View {
         }
     }
 
-    private func fetchProgress(for character: String) -> KanjiProgress? {
+    private func fetchKanjiProgress(for character: String) -> KanjiProgress? {
         let descriptor = FetchDescriptor<KanjiProgress>(
             predicate: #Predicate { $0.character == character }
+        )
+        return try? modelContext.fetch(descriptor).first
+    }
+
+    private func fetchRadicalProgress(for radicalId: Int) -> RadicalProgress? {
+        let descriptor = FetchDescriptor<RadicalProgress>(
+            predicate: #Predicate { $0.radicalId == radicalId }
+        )
+        return try? modelContext.fetch(descriptor).first
+    }
+
+    private func fetchVocabProgress(for vocabularyId: Int) -> VocabularyProgress? {
+        let descriptor = FetchDescriptor<VocabularyProgress>(
+            predicate: #Predicate { $0.vocabularyId == vocabularyId }
         )
         return try? modelContext.fetch(descriptor).first
     }

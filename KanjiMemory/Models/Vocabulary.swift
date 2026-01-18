@@ -45,6 +45,7 @@ final class VocabularyProgress {
     var readingMnemonic: String?
     var srsStage: Int
     var nextReviewAt: Date?
+    var wanikaniAssignmentId: Int?  // Required for submitting reviews to WaniKani
     var createdAt: Date
     var updatedAt: Date
 
@@ -53,9 +54,11 @@ final class VocabularyProgress {
         set { srsStage = newValue.rawValue }
     }
 
-    init(vocabularyId: Int, srsStage: SRSStage = .lesson) {
+    init(vocabularyId: Int, srsStage: SRSStage = .lesson, nextReviewAt: Date? = nil, wanikaniAssignmentId: Int? = nil) {
         self.vocabularyId = vocabularyId
         self.srsStage = srsStage.rawValue
+        self.nextReviewAt = nextReviewAt
+        self.wanikaniAssignmentId = wanikaniAssignmentId
         self.createdAt = Date()
         self.updatedAt = Date()
     }

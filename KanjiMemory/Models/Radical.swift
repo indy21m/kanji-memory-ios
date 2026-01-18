@@ -58,6 +58,7 @@ final class RadicalProgress {
     var mnemonic: String?
     var srsStage: Int
     var nextReviewAt: Date?
+    var wanikaniAssignmentId: Int?  // Required for submitting reviews to WaniKani
     var createdAt: Date
     var updatedAt: Date
 
@@ -66,9 +67,11 @@ final class RadicalProgress {
         set { srsStage = newValue.rawValue }
     }
 
-    init(radicalId: Int, srsStage: SRSStage = .lesson) {
+    init(radicalId: Int, srsStage: SRSStage = .lesson, nextReviewAt: Date? = nil, wanikaniAssignmentId: Int? = nil) {
         self.radicalId = radicalId
         self.srsStage = srsStage.rawValue
+        self.nextReviewAt = nextReviewAt
+        self.wanikaniAssignmentId = wanikaniAssignmentId
         self.createdAt = Date()
         self.updatedAt = Date()
     }
