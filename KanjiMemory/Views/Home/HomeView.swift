@@ -177,7 +177,11 @@ struct StatCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding()
-        .glassCard()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.1), radius: 10, y: 5)
+        )
     }
 }
 
@@ -288,7 +292,11 @@ struct CurrentLevelCard: View {
             }
         }
         .padding()
-        .glassCard()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+        )
     }
 }
 
@@ -332,7 +340,11 @@ struct RecentActivityCard: View {
             }
         }
         .padding()
-        .glassCard()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial)
+                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+        )
     }
 }
 

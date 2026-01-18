@@ -383,7 +383,11 @@ struct ReviewQueueView: View {
                 }
             }
             .padding()
-            .glassCard()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+                    .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+            )
             .padding(.horizontal)
 
             // Start button
@@ -435,6 +439,32 @@ struct ReviewQueueView: View {
             .listStyle(.plain)
         }
         .background(Color(.systemGroupedBackground))
+    }
+}
+
+// MARK: - Filter Chip Component
+struct FilterChip: View {
+    let label: String
+    let isSelected: Bool
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.subheadline)
+                .fontWeight(isSelected ? .semibold : .regular)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(isSelected ? color.opacity(0.2) : Color(.tertiarySystemFill))
+                .foregroundColor(isSelected ? color : .primary)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(isSelected ? color : Color.clear, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 

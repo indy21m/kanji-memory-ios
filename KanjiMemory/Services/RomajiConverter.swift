@@ -131,7 +131,6 @@ struct RomajiConverter {
             }
 
             // Try to find a match, starting from longest possible
-            var matched = false
             for length in stride(from: min(buffer.count, 4), through: 1, by: -1) {
                 let suffix = String(buffer.suffix(length))
 
@@ -144,14 +143,9 @@ struct RomajiConverter {
                     // Found a match
                     result.append(kana)
                     buffer = String(buffer.dropLast(length))
-                    matched = true
                     break
                 }
             }
-
-            // If we matched something and there's leftover "n" at start of buffer
-            // followed by something that can form a syllable, leave it
-            // Otherwise, the next iteration will handle it
 
             // If buffer is getting too long and no match, might be invalid
             if buffer.count > 4 {
