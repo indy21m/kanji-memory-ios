@@ -592,8 +592,12 @@ struct SettingsView: View {
                                 // Update existing progress
                                 progress.srsStage = srsStage
                                 progress.wanikaniAssignmentId = assignmentId  // Store assignment ID
+                                // Set nextReviewAt from availableAt, or nil for burned items
                                 if let availableAt = assignment.data.availableAt {
                                     progress.nextReviewAt = ISO8601DateFormatter().date(from: availableAt)
+                                } else {
+                                    // Burned items or items without availableAt should have nil nextReviewAt
+                                    progress.nextReviewAt = nil
                                 }
                                 progress.updatedAt = Date()
                             } else {

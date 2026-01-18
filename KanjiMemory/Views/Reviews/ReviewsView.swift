@@ -4,13 +4,31 @@ import SwiftData
 struct ReviewsView: View {
     @Query(filter: #Predicate<KanjiProgress> { progress in
         progress.nextReviewAt != nil
-    }, sort: \KanjiProgress.nextReviewAt) private var dueItems: [KanjiProgress]
+    }, sort: \KanjiProgress.nextReviewAt) private var allItemsWithReviewDate: [KanjiProgress]
+
+    // Filter for items that are actually due NOW (nextReviewAt <= current time)
+    private var dueItems: [KanjiProgress] {
+        let now = Date()
+        return allItemsWithReviewDate.filter { progress in
+            guard let reviewDate = progress.nextReviewAt else { return false }
+            return reviewDate <= now
+        }
+    }
+
+    // Items with future review dates (for display purposes)
+    private var upcomingItems: [KanjiProgress] {
+        let now = Date()
+        return allItemsWithReviewDate.filter { progress in
+            guard let reviewDate = progress.nextReviewAt else { return false }
+            return reviewDate > now
+        }
+    }
 
     var body: some View {
         NavigationStack {
             VStack {
                 if dueItems.isEmpty {
-                    EmptyReviewsView()
+                    EmptyReviewsView(upcomingCount: upcomingItems.count)
                 } else {
                     ReviewQueueView(items: dueItems)
                 }
@@ -21,6 +39,8 @@ struct ReviewsView: View {
 }
 
 struct EmptyReviewsView: View {
+    var upcomingCount: Int = 0
+
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
@@ -34,6 +54,13 @@ struct EmptyReviewsView: View {
             Text("No reviews due right now.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+
+            if upcomingCount > 0 {
+                Text("\(upcomingCount) reviews coming up later")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 8)
+            }
 
             NavigationLink(destination: LevelsView()) {
                 Text("Learn New Kanji")
