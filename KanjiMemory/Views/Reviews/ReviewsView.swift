@@ -45,74 +45,97 @@ struct ReviewsView: View {
 
     @StateObject private var dataManager = DataManager.shared
 
-    // Combine all due items
-    private var dueItems: [DueReviewItem] {
-        let now = Date()
-        var items: [DueReviewItem] = []
-
-        // Add due radicals
-        for progress in radicalProgress {
-            guard let reviewDate = progress.nextReviewAt, reviewDate <= now else { continue }
-            if let radical = dataManager.allRadicals.first(where: { $0.id == progress.radicalId }) {
-                items.append(DueReviewItem(
-                    id: "radical-\(progress.radicalId)",
-                    type: .radical,
-                    displayText: radical.displayCharacter,
-                    srsStage: progress.srs,
-                    nextReviewAt: reviewDate
-                ))
-            }
-        }
-
-        // Add due kanji
-        for progress in kanjiProgress {
-            guard let reviewDate = progress.nextReviewAt, reviewDate <= now else { continue }
-            items.append(DueReviewItem(
-                id: "kanji-\(progress.character)",
-                type: .kanji,
-                displayText: progress.character,
-                srsStage: progress.srs,
-                nextReviewAt: reviewDate
-            ))
-        }
-
-        // Add due vocabulary
-        for progress in vocabProgress {
-            guard let reviewDate = progress.nextReviewAt, reviewDate <= now else { continue }
-            if let vocab = dataManager.allVocabulary.first(where: { $0.id == progress.vocabularyId }) {
-                items.append(DueReviewItem(
-                    id: "vocab-\(progress.vocabularyId)",
-                    type: .vocabulary,
-                    displayText: vocab.characters,
-                    srsStage: progress.srs,
-                    nextReviewAt: reviewDate
-                ))
-            }
-        }
-
-        return items.sorted { $0.nextReviewAt < $1.nextReviewAt }
-    }
-
-    // Count upcoming items
-    private var upcomingCount: Int {
-        let now = Date()
-        let radicalUpcoming = radicalProgress.filter { ($0.nextReviewAt ?? .distantFuture) > now }.count
-        let kanjiUpcoming = kanjiProgress.filter { ($0.nextReviewAt ?? .distantFuture) > now }.count
-        let vocabUpcoming = vocabProgress.filter { ($0.nextReviewAt ?? .distantFuture) > now }.count
-        return radicalUpcoming + kanjiUpcoming + vocabUpcoming
-    }
+    // Cached computed values
+    @State private var cachedDueItems: [DueReviewItem] = []
+    @State private var cachedUpcomingCount: Int = 0
+    @State private var lastRefresh: Date = .distantPast
 
     var body: some View {
         NavigationStack {
             VStack {
-                if dueItems.isEmpty {
-                    EmptyReviewsView(upcomingCount: upcomingCount)
+                if cachedDueItems.isEmpty {
+                    EmptyReviewsView(upcomingCount: cachedUpcomingCount)
                 } else {
-                    ReviewQueueView(items: dueItems)
+                    ReviewQueueView(items: cachedDueItems)
                 }
             }
             .navigationTitle("Reviews")
         }
+        .onAppear {
+            refreshIfNeeded()
+        }
+        .onChange(of: kanjiProgress.count) { _, _ in refreshIfNeeded() }
+        .onChange(of: radicalProgress.count) { _, _ in refreshIfNeeded() }
+        .onChange(of: vocabProgress.count) { _, _ in refreshIfNeeded() }
+    }
+
+    private func refreshIfNeeded() {
+        // Only refresh if data changed or more than 1 second since last refresh
+        guard Date().timeIntervalSince(lastRefresh) > 1 else { return }
+        lastRefresh = Date()
+
+        // Build lookup dictionaries for fast access (O(1) instead of O(n))
+        let radicalLookup = Dictionary(uniqueKeysWithValues: dataManager.allRadicals.map { ($0.id, $0) })
+        let vocabLookup = Dictionary(uniqueKeysWithValues: dataManager.allVocabulary.map { ($0.id, $0) })
+
+        let now = Date()
+        var items: [DueReviewItem] = []
+        var upcoming = 0
+
+        // Process radicals
+        for progress in radicalProgress {
+            guard let reviewDate = progress.nextReviewAt else { continue }
+            if reviewDate <= now {
+                if let radical = radicalLookup[progress.radicalId] {
+                    items.append(DueReviewItem(
+                        id: "radical-\(progress.radicalId)",
+                        type: .radical,
+                        displayText: radical.displayCharacter,
+                        srsStage: progress.srs,
+                        nextReviewAt: reviewDate
+                    ))
+                }
+            } else {
+                upcoming += 1
+            }
+        }
+
+        // Process kanji (no lookup needed - character is stored in progress)
+        for progress in kanjiProgress {
+            guard let reviewDate = progress.nextReviewAt else { continue }
+            if reviewDate <= now {
+                items.append(DueReviewItem(
+                    id: "kanji-\(progress.character)",
+                    type: .kanji,
+                    displayText: progress.character,
+                    srsStage: progress.srs,
+                    nextReviewAt: reviewDate
+                ))
+            } else {
+                upcoming += 1
+            }
+        }
+
+        // Process vocabulary
+        for progress in vocabProgress {
+            guard let reviewDate = progress.nextReviewAt else { continue }
+            if reviewDate <= now {
+                if let vocab = vocabLookup[progress.vocabularyId] {
+                    items.append(DueReviewItem(
+                        id: "vocab-\(progress.vocabularyId)",
+                        type: .vocabulary,
+                        displayText: vocab.characters,
+                        srsStage: progress.srs,
+                        nextReviewAt: reviewDate
+                    ))
+                }
+            } else {
+                upcoming += 1
+            }
+        }
+
+        cachedDueItems = items.sorted { $0.nextReviewAt < $1.nextReviewAt }
+        cachedUpcomingCount = upcoming
     }
 }
 

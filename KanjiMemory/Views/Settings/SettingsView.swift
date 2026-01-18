@@ -43,6 +43,7 @@ struct SettingsView: View {
 
     // Review settings (like Tsurukame)
     @State private var readingFirst = true
+    @State private var groupMeaningReading = true  // Back-to-back order
     @State private var fuzzyMatchingEnabled = true
     @State private var autoConvertKatakana = true
 
@@ -278,6 +279,22 @@ struct SettingsView: View {
                 }
                 .padding()
                 .onChange(of: readingFirst) { _, _ in saveReviewSettings() }
+
+                Divider()
+                    .padding(.leading)
+
+                // Back-to-back Order Toggle
+                Toggle(isOn: $groupMeaningReading) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Back-to-back Order")
+                            .font(.body)
+                        Text("Keep meaning and reading together for same item")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+                .onChange(of: groupMeaningReading) { _, _ in saveReviewSettings() }
 
                 Divider()
                     .padding(.leading)
@@ -518,6 +535,7 @@ struct SettingsView: View {
         // Load review settings
         let reviewPrefs = settings.reviewSettings
         readingFirst = reviewPrefs.readingFirst
+        groupMeaningReading = reviewPrefs.groupMeaningReading
         fuzzyMatchingEnabled = reviewPrefs.fuzzyMatchingEnabled
         autoConvertKatakana = reviewPrefs.autoConvertKatakana
     }
@@ -544,7 +562,7 @@ struct SettingsView: View {
     private func saveReviewSettings() {
         settings.reviewSettings = ReviewSettings(
             readingFirst: readingFirst,
-            groupMeaningReading: true,  // Always true for now
+            groupMeaningReading: groupMeaningReading,
             fuzzyMatchingEnabled: fuzzyMatchingEnabled,
             autoConvertKatakana: autoConvertKatakana
         )

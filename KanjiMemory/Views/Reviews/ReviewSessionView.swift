@@ -6,15 +6,21 @@ enum ReviewQuestionType {
     case reading
 }
 
+enum ReviewSubjectType {
+    case radical
+    case kanji
+    case vocabulary
+}
+
 /// A review item that tracks answers for both meaning and reading
 /// Includes wrong counts for accurate WaniKani sync (like Tsurukame)
 struct ReviewItemState: Identifiable {
     let id = UUID()
+    let subjectType: ReviewSubjectType
+    let subjectId: Int  // WaniKani subject ID (radical.id, kanji.wanikaniId, vocab.id)
     let character: String
     let meanings: [String]
-    let readings: [String]
-    let level: Int
-    let progressId: String
+    let readings: [String]  // Empty for radicals
     let wanikaniAssignmentId: Int?  // Required for submitting reviews to WaniKani
     var meaningAnswered = false
     var readingAnswered = false
@@ -24,8 +30,16 @@ struct ReviewItemState: Identifiable {
     var meaningWrongCount = 0
     var readingWrongCount = 0
 
+    // Radicals only need meaning
+    var needsReading: Bool {
+        subjectType != .radical
+    }
+
     var isComplete: Bool {
-        meaningAnswered && readingAnswered
+        if needsReading {
+            return meaningAnswered && readingAnswered
+        }
+        return meaningAnswered
     }
 }
 
@@ -61,9 +75,16 @@ struct ReviewSessionView: View {
 
     private var progress: Double {
         guard !reviewItems.isEmpty else { return 0 }
-        let totalQuestions = reviewItems.count * 2 // meaning + reading
+        // Calculate total questions: radicals=1 (meaning only), kanji/vocab=2 (meaning + reading)
+        let totalQuestions = reviewItems.reduce(0) { count, item in
+            count + (item.needsReading ? 2 : 1)
+        }
         let answeredQuestions = reviewItems.reduce(0) { count, item in
-            count + (item.meaningAnswered ? 1 : 0) + (item.readingAnswered ? 1 : 0)
+            var answered = item.meaningAnswered ? 1 : 0
+            if item.needsReading {
+                answered += item.readingAnswered ? 1 : 0
+            }
+            return count + answered
         }
         return Double(answeredQuestions) / Double(totalQuestions)
     }
@@ -112,40 +133,87 @@ struct ReviewSessionView: View {
     }
 
     private func loadReviewItems() async {
-        // Query for items due for review
         let now = Date()
-        let descriptor = FetchDescriptor<KanjiProgress>(
-            predicate: #Predicate { progress in
-                progress.nextReviewAt != nil && progress.nextReviewAt! <= now
-            },
+        var items: [ReviewItemState] = []
+
+        // Query for due radicals
+        let radicalDescriptor = FetchDescriptor<RadicalProgress>(
+            predicate: #Predicate { $0.nextReviewAt != nil && $0.nextReviewAt! <= now },
             sortBy: [SortDescriptor(\.nextReviewAt)]
         )
+        if let dueRadicals = try? modelContext.fetch(radicalDescriptor) {
+            for progress in dueRadicals {
+                if let radical = dataManager.allRadicals.first(where: { $0.id == progress.radicalId }) {
+                    items.append(ReviewItemState(
+                        subjectType: .radical,
+                        subjectId: radical.id,
+                        character: radical.displayCharacter,
+                        meanings: radical.meanings.map { $0.meaning },
+                        readings: [],  // Radicals have no readings
+                        wanikaniAssignmentId: progress.wanikaniAssignmentId
+                    ))
+                }
+            }
+        }
 
-        guard let dueItems = try? modelContext.fetch(descriptor), !dueItems.isEmpty else {
+        // Query for due kanji
+        let kanjiDescriptor = FetchDescriptor<KanjiProgress>(
+            predicate: #Predicate { $0.nextReviewAt != nil && $0.nextReviewAt! <= now },
+            sortBy: [SortDescriptor(\.nextReviewAt)]
+        )
+        if let dueKanji = try? modelContext.fetch(kanjiDescriptor) {
+            for progress in dueKanji {
+                if let kanji = dataManager.getKanji(byCharacter: progress.character) {
+                    items.append(ReviewItemState(
+                        subjectType: .kanji,
+                        subjectId: kanji.wanikaniId,
+                        character: kanji.character,
+                        meanings: kanji.meanings,
+                        readings: kanji.allReadings,
+                        wanikaniAssignmentId: progress.wanikaniAssignmentId
+                    ))
+                }
+            }
+        }
+
+        // Query for due vocabulary
+        let vocabDescriptor = FetchDescriptor<VocabularyProgress>(
+            predicate: #Predicate { $0.nextReviewAt != nil && $0.nextReviewAt! <= now },
+            sortBy: [SortDescriptor(\.nextReviewAt)]
+        )
+        if let dueVocab = try? modelContext.fetch(vocabDescriptor) {
+            for progress in dueVocab {
+                if let vocab = dataManager.allVocabulary.first(where: { $0.id == progress.vocabularyId }) {
+                    items.append(ReviewItemState(
+                        subjectType: .vocabulary,
+                        subjectId: vocab.id,
+                        character: vocab.characters,
+                        meanings: vocab.allMeanings,
+                        readings: vocab.allReadings,
+                        wanikaniAssignmentId: progress.wanikaniAssignmentId
+                    ))
+                }
+            }
+        }
+
+        guard !items.isEmpty else {
             sessionComplete = true
             isLoading = false
             return
         }
 
-        // Convert to review items with kanji data
-        var items: [ReviewItemState] = []
-        for progress in dueItems.prefix(10) { // Limit to 10 items per session
-            if let kanji = dataManager.getKanji(byCharacter: progress.character) {
-                items.append(ReviewItemState(
-                    character: kanji.character,
-                    meanings: kanji.meanings,
-                    readings: kanji.allReadings,
-                    level: kanji.level,
-                    progressId: progress.character,
-                    wanikaniAssignmentId: progress.wanikaniAssignmentId  // Include assignment ID for WaniKani sync
-                ))
+        // Shuffle and limit to 10 items per session
+        reviewItems = Array(items.shuffled().prefix(10))
+
+        // Set initial question type based on user preference
+        // For radicals, always start with meaning
+        if let first = reviewItems.first {
+            if first.subjectType == .radical {
+                currentQuestionType = .meaning
+            } else {
+                currentQuestionType = reviewSettings.readingFirst ? .reading : .meaning
             }
         }
-
-        reviewItems = items.shuffled()
-
-        // Set initial question type based on user preference (like Tsurukame)
-        currentQuestionType = reviewSettings.readingFirst ? .reading : .meaning
 
         isLoading = false
     }
@@ -231,7 +299,7 @@ struct ReviewSessionView: View {
 
         let item = reviewItems[currentIndex]
 
-        // Check if both questions are answered for this item
+        // Check if all questions are answered for this item
         if item.isComplete {
             // Update SRS for this item
             updateSRS(for: item)
@@ -239,50 +307,88 @@ struct ReviewSessionView: View {
             // Move to next item
             currentIndex += 1
 
-            // Reset question type based on user preference (like Tsurukame)
-            currentQuestionType = reviewSettings.readingFirst ? .reading : .meaning
-
             if currentIndex >= reviewItems.count {
                 sessionComplete = true
                 HapticManager.sessionComplete()
+            } else {
+                // Set question type for next item based on its type and user preference
+                let nextItem = reviewItems[currentIndex]
+                if nextItem.subjectType == .radical {
+                    currentQuestionType = .meaning
+                } else {
+                    currentQuestionType = reviewSettings.readingFirst ? .reading : .meaning
+                }
             }
         } else {
-            // Switch to the other question type
+            // Switch to the other question type (only for non-radicals)
             HapticManager.selection()
             currentQuestionType = currentQuestionType == .meaning ? .reading : .meaning
         }
     }
 
     private func updateSRS(for item: ReviewItemState) {
-        // Find the progress entry
-        let progressId = item.progressId
-        let descriptor = FetchDescriptor<KanjiProgress>(
-            predicate: #Predicate { $0.character == progressId }
-        )
+        // Calculate new SRS stage based on subject type
+        // For radicals, only meaning matters; for kanji/vocab, both matter
+        let readingCorrectForSRS = item.needsReading ? item.readingCorrect : true
 
-        guard let progress = try? modelContext.fetch(descriptor).first else {
-            return
+        switch item.subjectType {
+        case .radical:
+            let subjectId = item.subjectId
+            let descriptor = FetchDescriptor<RadicalProgress>(
+                predicate: #Predicate { $0.radicalId == subjectId }
+            )
+            guard let progress = try? modelContext.fetch(descriptor).first else { return }
+
+            let newStage = SRSCalculator.calculateNextStage(
+                currentStage: progress.srs,
+                meaningCorrect: item.meaningCorrect,
+                readingCorrect: readingCorrectForSRS
+            )
+            progress.srs = newStage
+            progress.nextReviewAt = SRSCalculator.calculateNextReviewDate(for: newStage)
+            progress.updatedAt = Date()
+            print("Updated radical \(item.character): \(progress.srs.name)")
+
+        case .kanji:
+            let character = item.character
+            let descriptor = FetchDescriptor<KanjiProgress>(
+                predicate: #Predicate { $0.character == character }
+            )
+            guard let progress = try? modelContext.fetch(descriptor).first else { return }
+
+            let newStage = SRSCalculator.calculateNextStage(
+                currentStage: progress.srs,
+                meaningCorrect: item.meaningCorrect,
+                readingCorrect: readingCorrectForSRS
+            )
+            progress.srs = newStage
+            progress.nextReviewAt = SRSCalculator.calculateNextReviewDate(for: newStage)
+            progress.timesReviewed += 1
+            if item.meaningCorrect && item.readingCorrect {
+                progress.timesCorrect += 1
+            }
+            progress.updatedAt = Date()
+            print("Updated kanji \(item.character): \(progress.srs.name)")
+
+        case .vocabulary:
+            let subjectId = item.subjectId
+            let descriptor = FetchDescriptor<VocabularyProgress>(
+                predicate: #Predicate { $0.vocabularyId == subjectId }
+            )
+            guard let progress = try? modelContext.fetch(descriptor).first else { return }
+
+            let newStage = SRSCalculator.calculateNextStage(
+                currentStage: progress.srs,
+                meaningCorrect: item.meaningCorrect,
+                readingCorrect: readingCorrectForSRS
+            )
+            progress.srs = newStage
+            progress.nextReviewAt = SRSCalculator.calculateNextReviewDate(for: newStage)
+            progress.updatedAt = Date()
+            print("Updated vocab \(item.character): \(progress.srs.name)")
         }
-
-        // Calculate new SRS stage
-        let newStage = SRSCalculator.calculateNextStage(
-            currentStage: progress.srs,
-            meaningCorrect: item.meaningCorrect,
-            readingCorrect: item.readingCorrect
-        )
-
-        // Update progress
-        progress.srs = newStage
-        progress.nextReviewAt = SRSCalculator.calculateNextReviewDate(for: newStage)
-        progress.timesReviewed += 1
-        if item.meaningCorrect && item.readingCorrect {
-            progress.timesCorrect += 1
-        }
-        progress.updatedAt = Date()
 
         try? modelContext.save()
-
-        print("Updated \(item.character): \(progress.srs.name), next review: \(progress.nextReviewAt?.description ?? "nil")")
 
         // Submit review to WaniKani in background
         Task {
@@ -344,6 +450,15 @@ struct ReviewCardView: View {
     let onNext: () -> Void
 
     @FocusState private var isInputFocused: Bool
+    @State private var romajiInput = ""
+
+    // Display text: for readings, show converted kana; for meanings, show raw input
+    private var displayText: String {
+        if questionType == .reading {
+            return RomajiConverter.convertForDisplay(romajiInput)
+        }
+        return userAnswer
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -373,14 +488,19 @@ struct ReviewCardView: View {
                 .padding()
                 .background(questionType == .meaning ? Color.pink : Color.purple)
 
-            // Level badge
+            // Type badge
             HStack {
-                Text("Level \(item.level)")
+                Text(item.subjectType == .radical ? "Radical" :
+                     item.subjectType == .kanji ? "Kanji" : "Vocabulary")
                     .font(.caption)
+                    .fontWeight(.semibold)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.purple.opacity(0.1))
-                    .foregroundColor(.purple)
+                    .foregroundColor(.white)
+                    .background(
+                        item.subjectType == .radical ? Color.blue :
+                        item.subjectType == .kanji ? Color.purple : Color.green
+                    )
                     .clipShape(Capsule())
                 Spacer()
             }
@@ -425,24 +545,63 @@ struct ReviewCardView: View {
                     .padding()
                 } else {
                     // Input field
-                    TextField(
-                        questionType == .meaning ? "Enter meaning..." : "Enter reading...",
-                        text: $userAnswer
-                    )
-                    .textFieldStyle(.roundedBorder)
-                    .font(.title3)
-                    .multilineTextAlignment(.center)
-                    .autocapitalization(.none)
-                    .focused($isInputFocused)
-                    .onSubmit(onSubmit)
-                    .padding(.horizontal)
+                    if questionType == .reading {
+                        // For readings: show converted kana, input romaji
+                        VStack(spacing: 8) {
+                            // Display converted kana
+                            Text(displayText.isEmpty ? " " : displayText)
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 44)
+                                .background(Color(.systemBackground))
+                                .cornerRadius(8)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
+                                .padding(.horizontal)
+
+                            // Hidden-ish romaji input
+                            TextField("Type in romaji (e.g., 'ka' → か)", text: $romajiInput)
+                                .textFieldStyle(.roundedBorder)
+                                .font(.caption)
+                                .multilineTextAlignment(.center)
+                                .autocapitalization(.none)
+                                .autocorrectionDisabled()
+                                .focused($isInputFocused)
+                                .onSubmit {
+                                    // Convert and set the answer before submitting
+                                    userAnswer = RomajiConverter.convertForDisplay(romajiInput)
+                                    onSubmit()
+                                }
+                                .onChange(of: romajiInput) { _, _ in
+                                    // Keep userAnswer in sync for answer checking
+                                    userAnswer = RomajiConverter.convertForDisplay(romajiInput)
+                                }
+                                .padding(.horizontal)
+                        }
+                    } else {
+                        // For meanings: standard text input
+                        TextField("Enter meaning...", text: $userAnswer)
+                            .textFieldStyle(.roundedBorder)
+                            .font(.title3)
+                            .multilineTextAlignment(.center)
+                            .autocapitalization(.none)
+                            .focused($isInputFocused)
+                            .onSubmit(onSubmit)
+                            .padding(.horizontal)
+                    }
 
                     Button("Submit") {
+                        if questionType == .reading {
+                            userAnswer = RomajiConverter.convertForDisplay(romajiInput)
+                        }
                         onSubmit()
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.purple)
-                    .disabled(userAnswer.isEmpty)
+                    .disabled(questionType == .reading ? romajiInput.isEmpty : userAnswer.isEmpty)
                     .padding()
                 }
             }
@@ -452,6 +611,12 @@ struct ReviewCardView: View {
         .background(Color(.systemBackground))
         .onAppear {
             isInputFocused = true
+        }
+        .onChange(of: userAnswer) { _, newValue in
+            // Reset romajiInput when userAnswer is cleared (next question)
+            if newValue.isEmpty {
+                romajiInput = ""
+            }
         }
     }
 }
