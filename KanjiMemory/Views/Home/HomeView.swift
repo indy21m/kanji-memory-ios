@@ -3,11 +3,27 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject var authManager: AuthManager
     @Query private var userSettings: [UserSettings]
+    @Query(filter: #Predicate<KanjiProgress> { progress in
+        progress.nextReviewAt != nil
+    }) private var allProgress: [KanjiProgress]
     @StateObject private var dataManager = DataManager.shared
+
+    @State private var hasAppeared = false
+    @State private var isRefreshing = false
 
     private var settings: UserSettings? {
         userSettings.first
+    }
+
+    private var dueReviewCount: Int {
+        let now = Date()
+        return allProgress.filter { progress in
+            guard let nextReview = progress.nextReviewAt else { return false }
+            return nextReview <= now
+        }.count
     }
 
     var body: some View {
@@ -15,29 +31,70 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     // Penguin Header
-                    PenguinHeader()
+                    PenguinHeader(isAuthenticated: authManager.isAuthenticated)
+                        .opacity(hasAppeared ? 1 : 0)
+                        .offset(y: hasAppeared ? 0 : 20)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.1), value: hasAppeared)
 
                     // Quick Stats
                     StatsCards()
+                        .opacity(hasAppeared ? 1 : 0)
+                        .offset(y: hasAppeared ? 0 : 20)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.2), value: hasAppeared)
 
                     // Review Button
-                    ReviewButton()
+                    ReviewButton(dueCount: dueReviewCount)
+                        .opacity(hasAppeared ? 1 : 0)
+                        .offset(y: hasAppeared ? 0 : 20)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.3), value: hasAppeared)
 
                     // Current Level Progress
                     CurrentLevelCard()
+                        .opacity(hasAppeared ? 1 : 0)
+                        .offset(y: hasAppeared ? 0 : 20)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.4), value: hasAppeared)
 
                     // Recent Activity
-                    RecentActivityCard()
+                    RecentActivityCard(progressCount: allProgress.count)
+                        .opacity(hasAppeared ? 1 : 0)
+                        .offset(y: hasAppeared ? 0 : 20)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.5), value: hasAppeared)
                 }
                 .padding()
             }
-            .background(Color(.systemGroupedBackground))
+            .background(
+                // Subtle gradient background that adapts to color scheme
+                LinearGradient(
+                    colors: colorScheme == .dark
+                        ? [Color(.systemBackground), Color(.systemBackground)]
+                        : [Color(.systemGroupedBackground), Color(.systemGroupedBackground)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .refreshable {
+                HapticManager.light()
+                isRefreshing = true
+                // Simulate refresh - in real app, this would sync data
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                isRefreshing = false
+                HapticManager.success()
+            }
             .navigationTitle("Penguin Sensei")
+            .onAppear {
+                if !hasAppeared {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        hasAppeared = true
+                    }
+                }
+            }
         }
     }
 }
 
 struct PenguinHeader: View {
+    let isAuthenticated: Bool
+
     var body: some View {
         VStack(spacing: 12) {
             Text("🐧")
@@ -48,7 +105,7 @@ struct PenguinHeader: View {
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Ready to master some kanji?")
+                Text(isAuthenticated ? "Ready to master some kanji?" : "Sign in to sync your progress")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -127,6 +184,9 @@ struct StatCard: View {
 }
 
 struct ReviewButton: View {
+    let dueCount: Int
+    @State private var isPressed = false
+
     var body: some View {
         NavigationLink(destination: ReviewSessionView()) {
             HStack {
@@ -136,12 +196,22 @@ struct ReviewButton: View {
                 VStack(alignment: .leading) {
                     Text("Start Review")
                         .font(.headline)
-                    Text("0 items due")
+                    Text("\(dueCount) items due")
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.8))
                 }
 
                 Spacer()
+
+                if dueCount > 0 {
+                    Text("\(dueCount)")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(.white.opacity(0.2))
+                        .clipShape(Capsule())
+                }
 
                 Image(systemName: "chevron.right")
             }
@@ -149,17 +219,34 @@ struct ReviewButton: View {
             .padding()
             .background(
                 LinearGradient(
-                    colors: [.purple, .pink],
+                    colors: dueCount > 0 ? [.purple, .pink] : [.gray, .gray.opacity(0.8)],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: dueCount > 0 ? .purple.opacity(0.3) : .clear, radius: 8, y: 4)
+            .scaleEffect(isPressed ? 0.97 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: isPressed)
         }
+        .buttonStyle(PlainButtonStyle())
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in
+                    if !isPressed {
+                        isPressed = true
+                        HapticManager.light()
+                    }
+                }
+                .onEnded { _ in
+                    isPressed = false
+                }
+        )
     }
 }
 
 struct CurrentLevelCard: View {
+    @EnvironmentObject var authManager: AuthManager
     @StateObject private var dataManager = DataManager.shared
 
     var body: some View {
@@ -211,6 +298,8 @@ struct CurrentLevelCard: View {
 }
 
 struct RecentActivityCard: View {
+    let progressCount: Int
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 4) {
@@ -219,18 +308,33 @@ struct RecentActivityCard: View {
                     .font(.headline)
             }
 
-            VStack(spacing: 8) {
-                Image(systemName: "sparkles")
-                    .font(.largeTitle)
-                    .foregroundStyle(.secondary.opacity(0.5))
+            if progressCount > 0 {
+                VStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(.green)
 
-                Text("Start learning to see your progress!")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
+                    Text("You're learning \(progressCount) kanji!")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "sparkles")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary.opacity(0.5))
+
+                    Text("Start learning to see your progress!")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
         }
         .padding()
         .background(
@@ -242,6 +346,7 @@ struct RecentActivityCard: View {
 
 #Preview {
     HomeView()
+        .environmentObject(AuthManager.shared)
         .modelContainer(for: [
             KanjiProgress.self,
             UserSettings.self

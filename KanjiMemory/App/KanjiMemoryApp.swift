@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct KanjiMemoryApp: App {
     let modelContainer: ModelContainer
+    @StateObject private var authManager = AuthManager.shared
 
     init() {
         do {
@@ -30,6 +31,7 @@ struct KanjiMemoryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(authManager)
         }
         .modelContainer(modelContainer)
     }

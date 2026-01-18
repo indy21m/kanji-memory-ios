@@ -4,13 +4,22 @@ import SwiftData
 struct KanjiDetailView: View {
     let kanji: Kanji
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var authManager: AuthManager
     @Query private var progressList: [KanjiProgress]
+    @Query private var userSettings: [UserSettings]
     @State private var mnemonic: String = ""
     @State private var isGeneratingMnemonic = false
+    @State private var isGeneratingImage = false
+    @State private var errorMessage: String?
     @State private var showImagePicker = false
+    @State private var remoteImages: [RemoteImage] = []
 
     private var progress: KanjiProgress? {
         progressList.first { $0.character == kanji.character }
+    }
+
+    private var settings: UserSettings? {
+        userSettings.first
     }
 
     var body: some View {
@@ -31,12 +40,21 @@ struct KanjiDetailView: View {
                 MnemonicSection(
                     mnemonic: $mnemonic,
                     isGenerating: isGeneratingMnemonic,
+                    isAuthenticated: authManager.isAuthenticated,
+                    errorMessage: errorMessage,
                     onGenerate: generateMnemonic,
                     onSave: saveMnemonic
                 )
 
                 // Images section
-                ImagesSection(character: kanji.character)
+                ImagesSection(
+                    character: kanji.character,
+                    remoteImages: remoteImages,
+                    isGenerating: isGeneratingImage,
+                    isAuthenticated: authManager.isAuthenticated,
+                    onGenerateImage: generateImage,
+                    onRefresh: loadRemoteImages
+                )
             }
             .padding()
         }
@@ -54,20 +72,58 @@ struct KanjiDetailView: View {
             if let progress = progress {
                 mnemonic = progress.mnemonic ?? ""
             }
+            loadRemoteImages()
         }
     }
 
     private func generateMnemonic() {
-        // TODO: Call API to generate mnemonic
+        guard authManager.isAuthenticated else {
+            errorMessage = "Please sign in to generate mnemonics"
+            HapticManager.warning()
+            return
+        }
+
+        HapticManager.light()
         isGeneratingMnemonic = true
-        // Simulated delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            mnemonic = "AI generated mnemonic would appear here..."
-            isGeneratingMnemonic = false
+        errorMessage = nil
+
+        Task {
+            do {
+                let prefs = settings?.aiPreferences ?? AIPreferences()
+
+                let generatedMnemonic = try await APIService.shared.generateMnemonic(
+                    character: kanji.character,
+                    meanings: kanji.meanings,
+                    readings: kanji.allReadings,
+                    style: prefs.mnemonicStyle,
+                    interests: prefs.personalInterests
+                )
+
+                await MainActor.run {
+                    mnemonic = generatedMnemonic
+                    isGeneratingMnemonic = false
+                    HapticManager.success()
+                    // Auto-save the generated mnemonic
+                    saveMnemonic()
+                }
+            } catch let error as APIError {
+                await MainActor.run {
+                    errorMessage = error.errorDescription
+                    isGeneratingMnemonic = false
+                    HapticManager.error()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isGeneratingMnemonic = false
+                    HapticManager.error()
+                }
+            }
         }
     }
 
     private func saveMnemonic() {
+        HapticManager.light()
         if let existing = progress {
             existing.mnemonic = mnemonic
             existing.updatedAt = Date()
@@ -81,6 +137,85 @@ struct KanjiDetailView: View {
             modelContext.insert(newProgress)
         }
         try? modelContext.save()
+        HapticManager.success()
+    }
+
+    private func generateImage() {
+        guard authManager.isAuthenticated else {
+            errorMessage = "Please sign in to generate images"
+            HapticManager.warning()
+            return
+        }
+
+        guard !mnemonic.isEmpty else {
+            errorMessage = "Please add a mnemonic first"
+            HapticManager.warning()
+            return
+        }
+
+        HapticManager.light()
+        isGeneratingImage = true
+        errorMessage = nil
+
+        Task {
+            do {
+                let prefs = settings?.aiPreferences ?? AIPreferences()
+
+                let imageUrl = try await APIService.shared.generateImage(
+                    character: kanji.character,
+                    mnemonic: mnemonic,
+                    style: prefs.imageStyle
+                )
+
+                // Download and cache the image
+                let imageData = try await APIService.shared.downloadImage(from: imageUrl)
+
+                await MainActor.run {
+                    // Save to local cache
+                    let cachedImage = CachedImage(
+                        character: kanji.character,
+                        imageData: imageData,
+                        isAIGenerated: true,
+                        prompt: mnemonic
+                    )
+                    modelContext.insert(cachedImage)
+                    try? modelContext.save()
+
+                    isGeneratingImage = false
+                    HapticManager.success()
+
+                    // Refresh remote images
+                    loadRemoteImages()
+                }
+            } catch let error as APIError {
+                await MainActor.run {
+                    errorMessage = error.errorDescription
+                    isGeneratingImage = false
+                    HapticManager.error()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isGeneratingImage = false
+                    HapticManager.error()
+                }
+            }
+        }
+    }
+
+    private func loadRemoteImages() {
+        guard authManager.isAuthenticated else { return }
+
+        Task {
+            do {
+                let images = try await APIService.shared.getImages(forCharacter: kanji.character)
+                await MainActor.run {
+                    remoteImages = images
+                }
+            } catch {
+                print("Failed to load remote images: \(error)")
+            }
+        }
     }
 }
 
@@ -182,6 +317,8 @@ struct RadicalsCompositionSection: View {
 struct MnemonicSection: View {
     @Binding var mnemonic: String
     let isGenerating: Bool
+    let isAuthenticated: Bool
+    let errorMessage: String?
     let onGenerate: () -> Void
     let onSave: () -> Void
 
@@ -201,11 +338,28 @@ struct MnemonicSection: View {
                         } else {
                             Image(systemName: "sparkles")
                         }
-                        Text("Generate")
+                        Text(isAuthenticated ? "Generate" : "Sign in")
                     }
                     .font(.caption)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        LinearGradient(
+                            colors: [.purple, .pink],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
                 }
                 .disabled(isGenerating)
+            }
+
+            if let error = errorMessage {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
             }
 
             TextEditor(text: $mnemonic)
@@ -229,9 +383,15 @@ struct MnemonicSection: View {
 
 struct ImagesSection: View {
     let character: String
+    let remoteImages: [RemoteImage]
+    let isGenerating: Bool
+    let isAuthenticated: Bool
+    let onGenerateImage: () -> Void
+    let onRefresh: () -> Void
+
     @Query private var cachedImages: [CachedImage]
 
-    private var images: [CachedImage] {
+    private var localImages: [CachedImage] {
         cachedImages.filter { $0.character == character }
     }
 
@@ -243,31 +403,100 @@ struct ImagesSection: View {
 
                 Spacer()
 
-                Button {
-                    // TODO: Add image
-                } label: {
+                Button(action: onGenerateImage) {
                     HStack(spacing: 4) {
-                        Image(systemName: "plus")
-                        Text("Add")
+                        if isGenerating {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "sparkles")
+                        }
+                        Text("Generate")
                     }
                     .font(.caption)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        LinearGradient(
+                            colors: [.blue, .purple],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.white)
+                    .clipShape(Capsule())
                 }
+                .disabled(isGenerating || !isAuthenticated)
             }
 
-            if images.isEmpty {
-                Text("No images yet")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, minHeight: 100)
+            if localImages.isEmpty && remoteImages.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "photo.on.rectangle.angled")
+                        .font(.largeTitle)
+                        .foregroundColor(.secondary)
+                    Text("No images yet")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    if !isAuthenticated {
+                        Text("Sign in to generate AI images")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(maxWidth: .infinity, minHeight: 100)
             } else {
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                    ForEach(images) { image in
+                    // Show local cached images
+                    ForEach(localImages) { image in
                         if let uiImage = UIImage(data: image.imageData) {
                             Image(uiImage: uiImage)
                                 .resizable()
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 120)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(alignment: .bottomTrailing) {
+                                    if image.isAIGenerated {
+                                        Image(systemName: "sparkles")
+                                            .font(.caption)
+                                            .padding(4)
+                                            .background(.ultraThinMaterial)
+                                            .clipShape(Circle())
+                                            .padding(4)
+                                    }
+                                }
+                        }
+                    }
+
+                    // Show remote images
+                    ForEach(remoteImages) { image in
+                        AsyncImage(url: URL(string: image.url)) { phase in
+                            switch phase {
+                            case .empty:
+                                ProgressView()
+                                    .frame(height: 120)
+                            case .success(let loadedImage):
+                                loadedImage
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(height: 120)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(alignment: .bottomTrailing) {
+                                        if image.isAIGenerated {
+                                            Image(systemName: "sparkles")
+                                                .font(.caption)
+                                                .padding(4)
+                                                .background(.ultraThinMaterial)
+                                                .clipShape(Circle())
+                                                .padding(4)
+                                        }
+                                    }
+                            case .failure:
+                                Image(systemName: "photo")
+                                    .foregroundColor(.secondary)
+                                    .frame(height: 120)
+                            @unknown default:
+                                EmptyView()
+                            }
                         }
                     }
                 }
@@ -318,6 +547,7 @@ struct SRSBadge: View {
             wanikaniId: 440,
             level: 1
         ))
+        .environmentObject(AuthManager.shared)
     }
-    .modelContainer(for: [KanjiProgress.self, CachedImage.self], inMemory: true)
+    .modelContainer(for: [KanjiProgress.self, CachedImage.self, UserSettings.self], inMemory: true)
 }

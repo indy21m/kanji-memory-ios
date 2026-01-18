@@ -86,6 +86,7 @@ final class KanjiProgress {
     var srsStage: Int
     var nextReviewAt: Date?
     var wanikaniId: Int?
+    var wanikaniAssignmentId: Int?  // Required for submitting reviews to WaniKani
     var timesReviewed: Int
     var timesCorrect: Int
     var createdAt: Date
@@ -103,7 +104,8 @@ final class KanjiProgress {
         mnemonic: String? = nil,
         srsStage: SRSStage = .lesson,
         nextReviewAt: Date? = nil,
-        wanikaniId: Int? = nil
+        wanikaniId: Int? = nil,
+        wanikaniAssignmentId: Int? = nil
     ) {
         self.character = character
         self.level = level
@@ -111,6 +113,7 @@ final class KanjiProgress {
         self.srsStage = srsStage.rawValue
         self.nextReviewAt = nextReviewAt
         self.wanikaniId = wanikaniId
+        self.wanikaniAssignmentId = wanikaniAssignmentId
         self.timesReviewed = 0
         self.timesCorrect = 0
         self.createdAt = Date()

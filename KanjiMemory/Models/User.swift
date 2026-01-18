@@ -18,6 +18,30 @@ struct AIPreferences: Codable {
     }
 }
 
+// MARK: - Review Settings (like Tsurukame)
+struct ReviewSettings: Codable {
+    /// Whether to ask reading before meaning (like Tsurukame's meaningFirst = false)
+    var readingFirst: Bool
+    /// Whether to group meaning and reading together for the same item
+    var groupMeaningReading: Bool
+    /// Enable fuzzy matching for meaning answers (typo tolerance)
+    var fuzzyMatchingEnabled: Bool
+    /// Auto-convert katakana input to hiragana for reading answers
+    var autoConvertKatakana: Bool
+
+    init(
+        readingFirst: Bool = true,           // Default to reading-first like Tsurukame
+        groupMeaningReading: Bool = true,    // Keep meaning/reading together
+        fuzzyMatchingEnabled: Bool = true,   // Enable typo tolerance
+        autoConvertKatakana: Bool = true     // Auto-convert katakana
+    ) {
+        self.readingFirst = readingFirst
+        self.groupMeaningReading = groupMeaningReading
+        self.fuzzyMatchingEnabled = fuzzyMatchingEnabled
+        self.autoConvertKatakana = autoConvertKatakana
+    }
+}
+
 enum MnemonicStyle: String, Codable, CaseIterable {
     case visual = "visual"
     case story = "story"
@@ -87,6 +111,7 @@ final class UserSettings {
     var wanikaniApiKey: String?
     var theme: String
     var aiPreferencesData: Data?
+    var reviewSettingsData: Data?
     var tier: String
     var aiGenerationsUsed: Int
     var aiGenerationsResetAt: Date?
@@ -104,6 +129,18 @@ final class UserSettings {
         }
         set {
             aiPreferencesData = try? JSONEncoder().encode(newValue)
+        }
+    }
+
+    var reviewSettings: ReviewSettings {
+        get {
+            guard let data = reviewSettingsData else {
+                return ReviewSettings()
+            }
+            return (try? JSONDecoder().decode(ReviewSettings.self, from: data)) ?? ReviewSettings()
+        }
+        set {
+            reviewSettingsData = try? JSONEncoder().encode(newValue)
         }
     }
 

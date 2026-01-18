@@ -224,5 +224,6 @@ struct VocabularyCell: View {
     NavigationStack {
         LevelDetailView(level: 1)
     }
+    .environmentObject(AuthManager.shared)
     .modelContainer(for: [KanjiProgress.self], inMemory: true)
 }

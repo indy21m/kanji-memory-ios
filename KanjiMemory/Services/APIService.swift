@@ -1,21 +1,46 @@
 import Foundation
 
-/// Service for communicating with the Kanji Memory backend API
+/// Service for communicating with the Penguin Sensei backend API
 class APIService: ObservableObject {
     static let shared = APIService()
 
-    #if DEBUG
-    private let baseURL = "http://localhost:3000/api"
-    #else
-    private let baseURL = "https://your-vercel-app.vercel.app/api"
-    #endif
+    // Production URL for the iOS API
+    private let baseURL = "https://penguin.zoostack.com/api/ios"
 
     private var authToken: String?
 
-    private init() {}
+    private init() {
+        // Restore token from Keychain on init
+        self.authToken = KeychainHelper.getAuthToken()
+    }
 
-    func setAuthToken(_ token: String) {
+    func setAuthToken(_ token: String?) {
         self.authToken = token
+        // Persist to keychain if token is set
+        if let token = token {
+            KeychainHelper.saveAuthToken(token)
+        }
+    }
+
+    var isAuthenticated: Bool {
+        authToken != nil
+    }
+
+    // MARK: - Authentication
+    func authenticateWithApple(identityToken: String, authorizationCode: String) async throws -> AuthResponse {
+        let body: [String: Any] = [
+            "identityToken": identityToken,
+            "authorizationCode": authorizationCode
+        ]
+
+        let data = try await request(
+            endpoint: "/auth/apple",
+            method: "POST",
+            body: try JSONSerialization.data(withJSONObject: body),
+            requiresAuth: false
+        )
+
+        return try JSONDecoder().decode(AuthResponse.self, from: data)
     }
 
     // MARK: - AI Generation
@@ -87,7 +112,8 @@ class APIService: ObservableObject {
 
     // MARK: - Images
     func getImages(forCharacter character: String) async throws -> [RemoteImage] {
-        let data = try await request(endpoint: "/images/\(character)")
+        let encodedChar = character.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? character
+        let data = try await request(endpoint: "/images/\(encodedChar)")
         return try JSONDecoder().decode([RemoteImage].self, from: data)
     }
 
@@ -119,20 +145,20 @@ class APIService: ObservableObject {
         return response.url
     }
 
-    // MARK: - Auth
-    func authenticateWithApple(identityToken: String, authorizationCode: String) async throws -> AuthResponse {
-        let body: [String: Any] = [
-            "identityToken": identityToken,
-            "authorizationCode": authorizationCode
-        ]
+    // MARK: - Download Image
+    func downloadImage(from urlString: String) async throws -> Data {
+        guard let url = URL(string: urlString) else {
+            throw APIError.invalidURL
+        }
 
-        let data = try await request(
-            endpoint: "/auth/apple",
-            method: "POST",
-            body: try JSONSerialization.data(withJSONObject: body)
-        )
+        let (data, response) = try await URLSession.shared.data(from: url)
 
-        return try JSONDecoder().decode(AuthResponse.self, from: data)
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.invalidResponse
+        }
+
+        return data
     }
 
     // MARK: - Private Request Helper
@@ -140,7 +166,8 @@ class APIService: ObservableObject {
         endpoint: String,
         method: String = "GET",
         body: Data? = nil,
-        contentType: String = "application/json"
+        contentType: String = "application/json",
+        requiresAuth: Bool = true
     ) async throws -> Data {
         guard let url = URL(string: baseURL + endpoint) else {
             throw APIError.invalidURL
@@ -150,7 +177,10 @@ class APIService: ObservableObject {
         request.httpMethod = method
         request.addValue(contentType, forHTTPHeaderField: "Content-Type")
 
-        if let token = authToken {
+        if requiresAuth {
+            guard let token = authToken else {
+                throw APIError.unauthorized
+            }
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
@@ -174,6 +204,10 @@ class APIService: ObservableObject {
         case 429:
             throw APIError.rateLimited
         default:
+            // Try to parse error message from response
+            if let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                throw APIError.serverError(message: errorResponse.error)
+            }
             throw APIError.httpError(statusCode: httpResponse.statusCode)
         }
     }
@@ -226,6 +260,10 @@ struct AuthUser: Codable {
     let tier: String
 }
 
+struct ErrorResponse: Codable {
+    let error: String
+}
+
 // MARK: - Errors
 enum APIError: LocalizedError {
     case invalidURL
@@ -234,6 +272,7 @@ enum APIError: LocalizedError {
     case subscriptionRequired
     case rateLimited
     case httpError(statusCode: Int)
+    case serverError(message: String)
 
     var errorDescription: String? {
         switch self {
@@ -249,6 +288,8 @@ enum APIError: LocalizedError {
             return "Too many requests - please try again later"
         case .httpError(let code):
             return "Server error: \(code)"
+        case .serverError(let message):
+            return message
         }
     }
 }

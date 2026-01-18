@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var authManager: AuthManager
     @StateObject private var dataManager = DataManager.shared
     @State private var selectedTab = 0
     @State private var isLoading = true
@@ -38,6 +39,9 @@ struct ContentView: View {
                         .tag(3)
                 }
                 .tint(.purple)
+                .onChange(of: selectedTab) { _, _ in
+                    HapticManager.selection()
+                }
             }
         }
         .task {
@@ -48,7 +52,39 @@ struct ContentView: View {
     private func loadData() async {
         // Load bundled JSON data on first launch
         await dataManager.loadBundledData()
+
+        // Check auth state and refresh profile if authenticated
+        if authManager.isAuthenticated {
+            await authManager.refreshProfile()
+        }
+
+        // Initialize review queue for new users (Level 1 kanji)
+        await initializeReviewQueueIfNeeded()
+
         isLoading = false
+    }
+
+    private func initializeReviewQueueIfNeeded() async {
+        // Check if we have any KanjiProgress entries
+        let descriptor = FetchDescriptor<KanjiProgress>()
+        let existingProgress = (try? modelContext.fetch(descriptor)) ?? []
+
+        // If no progress exists, create entries for Level 1 kanji
+        if existingProgress.isEmpty {
+            let level1Kanji = dataManager.getKanji(byLevel: 1)
+            for kanji in level1Kanji {
+                let progress = KanjiProgress(
+                    character: kanji.character,
+                    level: kanji.level,
+                    srsStage: .lesson,
+                    nextReviewAt: Date(), // Due now for new lessons
+                    wanikaniId: kanji.wanikaniId
+                )
+                modelContext.insert(progress)
+            }
+            try? modelContext.save()
+            print("Initialized \(level1Kanji.count) Level 1 kanji for review")
+        }
     }
 }
 
@@ -98,6 +134,7 @@ struct LoadingView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(AuthManager.shared)
         .modelContainer(for: [
             KanjiProgress.self,
             RadicalProgress.self,

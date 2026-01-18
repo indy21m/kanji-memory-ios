@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import AuthenticationServices
 
 // MARK: - Style Data
 struct StyleOption: Identifiable {
@@ -28,6 +29,8 @@ let imageStyles: [StyleOption] = [
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
+    @EnvironmentObject var authManager: AuthManager
+    @StateObject private var networkMonitor = NetworkMonitor.shared
     @Query private var userSettings: [UserSettings]
     @State private var wanikaniApiKey = ""
     @State private var selectedMnemonicStyle = "visual"
@@ -35,6 +38,13 @@ struct SettingsView: View {
     @State private var personalInterests = ""
     @State private var showWaniKaniSync = false
     @State private var isSyncing = false
+    @State private var syncMessage: String?
+    @State private var showSignOutConfirmation = false
+
+    // Review settings (like Tsurukame)
+    @State private var readingFirst = true
+    @State private var fuzzyMatchingEnabled = true
+    @State private var autoConvertKatakana = true
 
     private var settings: UserSettings {
         if let existing = userSettings.first {
@@ -53,8 +63,16 @@ struct SettingsView: View {
                     // Header with penguin branding
                     headerSection
 
-                    // WaniKani section
-                    wanikaniSection
+                    // Account section (Sign in with Apple)
+                    accountSection
+
+                    // WaniKani section - only visible when online
+                    if networkMonitor.isConnected {
+                        wanikaniSection
+                    }
+
+                    // Review Settings section (like Tsurukame)
+                    reviewSettingsSection
 
                     // Mnemonic Style section
                     mnemonicStyleSection
@@ -76,6 +94,14 @@ struct SettingsView: View {
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Settings")
             .onAppear { loadSettings() }
+            .alert("Sign Out", isPresented: $showSignOutConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Sign Out", role: .destructive) {
+                    authManager.signOut()
+                }
+            } message: {
+                Text("Are you sure you want to sign out?")
+            }
         }
     }
 
@@ -102,6 +128,80 @@ struct SettingsView: View {
         .padding(.vertical, 16)
     }
 
+    // MARK: - Account Section
+    private var accountSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Account", emoji: "👤")
+
+            VStack(spacing: 12) {
+                if authManager.isAuthenticated, let user = authManager.currentUser {
+                    // Signed in state
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Signed In")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            if let email = user.email {
+                                Text(email)
+                                    .font(.body)
+                            }
+                            Text(user.tier.capitalized)
+                                .font(.caption)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 2)
+                                .background(user.tier == "premium" ? Color.purple.opacity(0.2) : Color.gray.opacity(0.2))
+                                .foregroundColor(user.tier == "premium" ? .purple : .secondary)
+                                .clipShape(Capsule())
+                        }
+                        Spacer()
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.green)
+                    }
+
+                    Button {
+                        showSignOutConfirmation = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "rectangle.portrait.and.arrow.right")
+                            Text("Sign Out")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.red.opacity(0.1))
+                        .foregroundColor(.red)
+                        .cornerRadius(10)
+                    }
+                } else {
+                    // Signed out state
+                    VStack(spacing: 12) {
+                        Text("Sign in to sync your progress and use AI features")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+
+                        if authManager.isLoading {
+                            ProgressView()
+                                .frame(height: 50)
+                        } else {
+                            SignInWithAppleButtonView()
+                                .environmentObject(authManager)
+                        }
+
+                        if let error = authManager.errorMessage {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+                    }
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+    }
+
     // MARK: - WaniKani Section
     private var wanikaniSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -111,6 +211,12 @@ struct SettingsView: View {
                 SecureField("API Key", text: $wanikaniApiKey)
                     .textFieldStyle(.roundedBorder)
                     .textContentType(.password)
+                    .onChange(of: wanikaniApiKey) { _, newValue in
+                        // Save to Keychain when changed
+                        if !newValue.isEmpty {
+                            KeychainHelper.saveWaniKaniApiKey(newValue)
+                        }
+                    }
 
                 Button {
                     syncWaniKani()
@@ -138,11 +244,73 @@ struct SettingsView: View {
                 }
                 .disabled(wanikaniApiKey.isEmpty || isSyncing)
 
-                Text("Get your API key from wanikani.com/settings")
+                if let message = syncMessage {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundColor(message.contains("Error") ? .red : .green)
+                }
+
+                Text("Get your API key from wanikani.com/settings/personal_access_tokens")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
             .padding()
+            .background(Color(.secondarySystemGroupedBackground))
+            .cornerRadius(16)
+        }
+    }
+
+    // MARK: - Review Settings Section (like Tsurukame)
+    private var reviewSettingsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Review Settings", emoji: "📝")
+
+            VStack(spacing: 0) {
+                // Reading First Toggle
+                Toggle(isOn: $readingFirst) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Reading First")
+                            .font(.body)
+                        Text("Ask reading before meaning (like Tsurukame)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+                .onChange(of: readingFirst) { _, _ in saveReviewSettings() }
+
+                Divider()
+                    .padding(.leading)
+
+                // Fuzzy Matching Toggle
+                Toggle(isOn: $fuzzyMatchingEnabled) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Typo Tolerance")
+                            .font(.body)
+                        Text("Accept close spelling for meanings")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+                .onChange(of: fuzzyMatchingEnabled) { _, _ in saveReviewSettings() }
+
+                Divider()
+                    .padding(.leading)
+
+                // Auto Convert Katakana Toggle
+                Toggle(isOn: $autoConvertKatakana) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Auto-convert Katakana")
+                            .font(.body)
+                        Text("Convert カタカナ input to hiragana")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+                .onChange(of: autoConvertKatakana) { _, _ in saveReviewSettings() }
+            }
             .background(Color(.secondarySystemGroupedBackground))
             .cornerRadius(16)
         }
@@ -219,11 +387,11 @@ struct SettingsView: View {
                         Text("Current Plan")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                        Text(settings.subscriptionTier.rawValue.capitalized)
+                        Text(authManager.currentUser?.tier.capitalized ?? settings.subscriptionTier.rawValue.capitalized)
                             .font(.headline)
                     }
                     Spacer()
-                    Text(settings.subscriptionTier == .premium ? "∞" : "5")
+                    Text(authManager.currentUser?.tier == "premium" ? "∞" : "5")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(
@@ -238,9 +406,9 @@ struct SettingsView: View {
                         .foregroundColor(.secondary)
                 }
 
-                if settings.subscriptionTier == .free {
+                if authManager.currentUser?.tier != "premium" {
                     Button {
-                        // TODO: Show subscription options
+                        // TODO: Show subscription options (Apple IAP)
                     } label: {
                         HStack {
                             Image(systemName: "sparkles")
@@ -338,11 +506,20 @@ struct SettingsView: View {
 
     // MARK: - Functions
     private func loadSettings() {
-        wanikaniApiKey = settings.wanikaniApiKey ?? ""
+        // Load WaniKani API key from Keychain
+        wanikaniApiKey = KeychainHelper.getWaniKaniApiKey() ?? ""
+
+        // Load AI preferences
         let prefs = settings.aiPreferences
         selectedMnemonicStyle = prefs.mnemonicStyle.rawValue
         selectedImageStyle = prefs.imageStyle.rawValue
         personalInterests = prefs.personalInterests
+
+        // Load review settings
+        let reviewPrefs = settings.reviewSettings
+        readingFirst = reviewPrefs.readingFirst
+        fuzzyMatchingEnabled = reviewPrefs.fuzzyMatchingEnabled
+        autoConvertKatakana = reviewPrefs.autoConvertKatakana
     }
 
     private func saveSettings() {
@@ -354,17 +531,108 @@ struct SettingsView: View {
                 personalInterests: personalInterests
             )
             try? modelContext.save()
+
+            // Also sync to server if authenticated
+            if authManager.isAuthenticated {
+                Task {
+                    try? await APIService.shared.updatePreferences(preferences: settings.aiPreferences)
+                }
+            }
         }
     }
 
-    private func syncWaniKani() {
-        isSyncing = true
-        settings.wanikaniApiKey = wanikaniApiKey
+    private func saveReviewSettings() {
+        settings.reviewSettings = ReviewSettings(
+            readingFirst: readingFirst,
+            groupMeaningReading: true,  // Always true for now
+            fuzzyMatchingEnabled: fuzzyMatchingEnabled,
+            autoConvertKatakana: autoConvertKatakana
+        )
         try? modelContext.save()
-        // TODO: Implement WaniKani sync
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isSyncing = false
+    }
+
+    private func syncWaniKani() {
+        guard !wanikaniApiKey.isEmpty else { return }
+
+        HapticManager.light()
+        isSyncing = true
+        syncMessage = nil
+
+        Task {
+            do {
+                // Set the API key on the service
+                WaniKaniService.shared.setApiKey(wanikaniApiKey)
+
+                // Fetch user info
+                let user = try await WaniKaniService.shared.fetchUser()
+                print("WaniKani user level: \(user.level)")
+
+                // Fetch all kanji assignments
+                let assignments = try await WaniKaniService.shared.fetchAssignments(subjectTypes: ["kanji"])
+                print("Fetched \(assignments.count) kanji assignments")
+
+                // Get DataManager for looking up kanji by wanikaniId
+                let dataManager = await DataManager.shared
+
+                // Update or create KanjiProgress for each assignment
+                await MainActor.run {
+                    var updated = 0
+                    for assignment in assignments {
+                        let subjectId = assignment.data.subjectId
+                        let srsStage = assignment.data.srsStage
+                        let assignmentId = assignment.id  // Store assignment ID for review submission
+
+                        // Find the kanji by wanikaniId
+                        if let kanji = dataManager.allKanji.first(where: { $0.wanikaniId == subjectId }) {
+                            // Check if progress exists
+                            let existingProgress = userSettings.first?.id != nil ?
+                                fetchProgress(for: kanji.character) : nil
+
+                            if let progress = existingProgress {
+                                // Update existing progress
+                                progress.srsStage = srsStage
+                                progress.wanikaniAssignmentId = assignmentId  // Store assignment ID
+                                if let availableAt = assignment.data.availableAt {
+                                    progress.nextReviewAt = ISO8601DateFormatter().date(from: availableAt)
+                                }
+                                progress.updatedAt = Date()
+                            } else {
+                                // Create new progress
+                                let newProgress = KanjiProgress(
+                                    character: kanji.character,
+                                    level: kanji.level,
+                                    srsStage: SRSStage(rawValue: srsStage) ?? .lesson,
+                                    nextReviewAt: assignment.data.availableAt.flatMap { ISO8601DateFormatter().date(from: $0) },
+                                    wanikaniId: subjectId,
+                                    wanikaniAssignmentId: assignmentId  // Store assignment ID
+                                )
+                                modelContext.insert(newProgress)
+                            }
+                            updated += 1
+                        }
+                    }
+
+                    try? modelContext.save()
+                    syncMessage = "Synced \(updated) kanji from WaniKani"
+                    isSyncing = false
+                    HapticManager.success()
+                }
+
+            } catch {
+                await MainActor.run {
+                    syncMessage = "Error: \(error.localizedDescription)"
+                    isSyncing = false
+                    HapticManager.error()
+                }
+            }
         }
+    }
+
+    private func fetchProgress(for character: String) -> KanjiProgress? {
+        let descriptor = FetchDescriptor<KanjiProgress>(
+            predicate: #Predicate { $0.character == character }
+        )
+        return try? modelContext.fetch(descriptor).first
     }
 }
 
@@ -376,7 +644,10 @@ struct StyleCard: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.selection()
+            action()
+        } label: {
             VStack(spacing: 6) {
                 Text(option.emoji)
                     .font(.title2)
@@ -410,6 +681,8 @@ struct StyleCard: View {
                         .padding(6)
                 }
             }
+            .scaleEffect(isSelected ? 1.02 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(.plain)
     }
@@ -417,5 +690,6 @@ struct StyleCard: View {
 
 #Preview {
     SettingsView()
-        .modelContainer(for: [UserSettings.self], inMemory: true)
+        .environmentObject(AuthManager.shared)
+        .modelContainer(for: [UserSettings.self, KanjiProgress.self], inMemory: true)
 }
