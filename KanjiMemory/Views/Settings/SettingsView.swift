@@ -592,13 +592,8 @@ struct SettingsView: View {
                                 // Update existing progress
                                 progress.srsStage = srsStage
                                 progress.wanikaniAssignmentId = assignmentId  // Store assignment ID
-                                // Set nextReviewAt from availableAt, or nil for burned items
-                                if let availableAt = assignment.data.availableAt {
-                                    progress.nextReviewAt = ISO8601DateFormatter().date(from: availableAt)
-                                } else {
-                                    // Burned items or items without availableAt should have nil nextReviewAt
-                                    progress.nextReviewAt = nil
-                                }
+                                // Set nextReviewAt from availableAt (handles fractional seconds), or nil for burned items
+                                progress.nextReviewAt = WaniKaniService.parseDate(assignment.data.availableAt)
                                 progress.updatedAt = Date()
                             } else {
                                 // Create new progress
@@ -606,7 +601,7 @@ struct SettingsView: View {
                                     character: kanji.character,
                                     level: kanji.level,
                                     srsStage: SRSStage(rawValue: srsStage) ?? .lesson,
-                                    nextReviewAt: assignment.data.availableAt.flatMap { ISO8601DateFormatter().date(from: $0) },
+                                    nextReviewAt: WaniKaniService.parseDate(assignment.data.availableAt),
                                     wanikaniId: subjectId,
                                     wanikaniAssignmentId: assignmentId  // Store assignment ID
                                 )

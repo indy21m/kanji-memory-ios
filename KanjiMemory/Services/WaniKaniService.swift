@@ -6,6 +6,31 @@ class WaniKaniService: ObservableObject {
     private let baseURL = "https://api.wanikani.com/v2"
     private var apiKey: String?
 
+    /// Date formatter for WaniKani API dates (handles fractional seconds)
+    static let dateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    /// Fallback formatter without fractional seconds
+    static let dateFormatterFallback: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
+
+    /// Parse a WaniKani date string, handling both with and without fractional seconds
+    static func parseDate(_ dateString: String?) -> Date? {
+        guard let dateString = dateString else { return nil }
+        // Try with fractional seconds first
+        if let date = dateFormatter.date(from: dateString) {
+            return date
+        }
+        // Fallback to without fractional seconds
+        return dateFormatterFallback.date(from: dateString)
+    }
+
     private init() {}
 
     func setApiKey(_ key: String) {
