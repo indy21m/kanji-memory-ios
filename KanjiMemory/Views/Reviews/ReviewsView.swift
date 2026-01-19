@@ -238,9 +238,10 @@ struct ReviewsView: View {
         lastRefresh = Date()
 
         // Build lookup dictionaries for fast access (O(1) instead of O(n))
-        let radicalLookup = Dictionary(uniqueKeysWithValues: dataManager.allRadicals.map { ($0.id, $0) })
-        let vocabLookup = Dictionary(uniqueKeysWithValues: dataManager.allVocabulary.map { ($0.id, $0) })
-        let kanjiLookup = Dictionary(uniqueKeysWithValues: dataManager.allKanji.map { ($0.character, $0) })
+        // Use reduce to safely handle potential duplicates (last one wins)
+        let radicalLookup = dataManager.allRadicals.reduce(into: [Int: Radical]()) { $0[$1.id] = $1 }
+        let vocabLookup = dataManager.allVocabulary.reduce(into: [Int: Vocabulary]()) { $0[$1.id] = $1 }
+        let kanjiLookup = dataManager.allKanji.reduce(into: [String: Kanji]()) { $0[$1.character] = $1 }
 
         let now = Date()
         var items: [DueReviewItem] = []
