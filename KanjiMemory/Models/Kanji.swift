@@ -91,6 +91,58 @@ extension Color {
     }
 }
 
+// MARK: - Subject Type Colors (Tsurukame-style)
+/// WaniKani/Tsurukame subject type colors for dynamic backgrounds
+struct SubjectTypeColors {
+    // MARK: - Original Vibrant Colors (for accents, buttons, etc.)
+    // Radical - Blue
+    static let radicalPrimary = Color(hex: "00AAFF")
+    static let radicalSecondary = Color(hex: "0093DD")
+    static let radicalDark = Color(hex: "006699")
+    static let radicalDarkSecondary = Color(hex: "005580")
+
+    // Kanji - Pink/Magenta
+    static let kanjiPrimary = Color(hex: "FF00AA")
+    static let kanjiSecondary = Color(hex: "DD0093")
+    static let kanjiDark = Color(hex: "990066")
+    static let kanjiDarkSecondary = Color(hex: "800055")
+
+    // Vocabulary - Purple
+    static let vocabularyPrimary = Color(hex: "AA00FF")
+    static let vocabularySecondary = Color(hex: "9300DD")
+    static let vocabularyDark = Color(hex: "660099")
+    static let vocabularyDarkSecondary = Color(hex: "550080")
+
+    // MARK: - Soft Gradient Colors (for backgrounds - web app inspired)
+    // These are softer, less saturated colors for background gradients
+
+    // Radical - Soft Blue (Light Mode)
+    static let radicalSoftStart = Color(red: 0.93, green: 0.95, blue: 0.98)
+    static let radicalSoftEnd = Color(red: 0.88, green: 0.93, blue: 0.98)
+    // Radical - Deep Blue (Dark Mode)
+    static let radicalDeepStart = Color(red: 0.05, green: 0.08, blue: 0.15)
+    static let radicalDeepEnd = Color(red: 0.08, green: 0.12, blue: 0.20)
+
+    // Kanji - Soft Purple (Light Mode)
+    static let kanjiSoftStart = Color(red: 0.95, green: 0.93, blue: 0.98)
+    static let kanjiSoftEnd = Color(red: 0.96, green: 0.93, blue: 0.98)
+    // Kanji - Deep Purple (Dark Mode)
+    static let kanjiDeepStart = Color(red: 0.08, green: 0.05, blue: 0.15)
+    static let kanjiDeepEnd = Color(red: 0.12, green: 0.08, blue: 0.18)
+
+    // Vocabulary - Soft Green (Light Mode)
+    static let vocabularySoftStart = Color(red: 0.93, green: 0.98, blue: 0.95)
+    static let vocabularySoftEnd = Color(red: 0.90, green: 0.98, blue: 0.93)
+    // Vocabulary - Deep Green (Dark Mode)
+    static let vocabularyDeepStart = Color(red: 0.05, green: 0.12, blue: 0.08)
+    static let vocabularyDeepEnd = Color(red: 0.08, green: 0.15, blue: 0.10)
+
+    // MARK: - Character Text Colors (Light Mode only - dark mode uses white)
+    static let radicalTextColor = Color(red: 0.15, green: 0.25, blue: 0.45)     // Deep blue
+    static let kanjiTextColor = Color(red: 0.30, green: 0.15, blue: 0.40)       // Deep purple
+    static let vocabularyTextColor = Color(red: 0.15, green: 0.35, blue: 0.20) // Deep green
+}
+
 // MARK: - Kanji Model (Bundled Data)
 struct Kanji: Codable, Identifiable, Hashable {
     let character: String

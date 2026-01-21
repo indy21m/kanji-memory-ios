@@ -80,7 +80,8 @@ struct HomeView: View {
                 isRefreshing = false
                 HapticManager.success()
             }
-            .navigationTitle("Penguin Sensei")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 if !hasAppeared {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import AVFoundation
 
 enum ReviewQuestionType {
     case meaning
@@ -22,6 +23,9 @@ struct ReviewItemState: Identifiable {
     let meanings: [String]
     let readings: [String]  // Empty for radicals
     let wanikaniAssignmentId: Int?  // Required for submitting reviews to WaniKani
+    let level: Int  // WaniKani level for display
+    let srsStage: SRSStage  // Current SRS stage for display
+    let audioURL: String?  // Audio URL for vocabulary
     var meaningAnswered = false
     var readingAnswered = false
     var meaningCorrect = false
@@ -41,6 +45,42 @@ struct ReviewItemState: Identifiable {
         }
         return meaningAnswered
     }
+
+    /// Soft background gradient colors based on subject type (web app inspired - light mode)
+    var backgroundGradientSoft: [Color] {
+        switch subjectType {
+        case .radical:
+            return [SubjectTypeColors.radicalSoftStart, SubjectTypeColors.radicalSoftEnd]
+        case .kanji:
+            return [SubjectTypeColors.kanjiSoftStart, SubjectTypeColors.kanjiSoftEnd]
+        case .vocabulary:
+            return [SubjectTypeColors.vocabularySoftStart, SubjectTypeColors.vocabularySoftEnd]
+        }
+    }
+
+    /// Deep background gradient colors based on subject type (web app inspired - dark mode)
+    var backgroundGradientDeep: [Color] {
+        switch subjectType {
+        case .radical:
+            return [SubjectTypeColors.radicalDeepStart, SubjectTypeColors.radicalDeepEnd]
+        case .kanji:
+            return [SubjectTypeColors.kanjiDeepStart, SubjectTypeColors.kanjiDeepEnd]
+        case .vocabulary:
+            return [SubjectTypeColors.vocabularyDeepStart, SubjectTypeColors.vocabularyDeepEnd]
+        }
+    }
+
+    /// Character text color based on subject type (light mode only - dark mode uses white)
+    var characterTextColor: Color {
+        switch subjectType {
+        case .radical:
+            return SubjectTypeColors.radicalTextColor
+        case .kanji:
+            return SubjectTypeColors.kanjiTextColor
+        case .vocabulary:
+            return SubjectTypeColors.vocabularyTextColor
+        }
+    }
 }
 
 struct ReviewSessionView: View {
@@ -48,6 +88,9 @@ struct ReviewSessionView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var dataManager = DataManager.shared
     @Query private var userSettings: [UserSettings]
+
+    /// Filter to only show specific subject types (nil = all types)
+    var subjectTypeFilter: ReviewSubjectType? = nil
 
     // Review session state
     @State private var reviewItems: [ReviewItemState] = []
@@ -92,6 +135,21 @@ struct ReviewSessionView: View {
         return Double(answeredQuestions) / Double(totalQuestions)
     }
 
+    /// Total answers given (for accuracy calculation)
+    private var totalAnswered: Int {
+        correctCount + incorrectCount
+    }
+
+    /// Count of fully completed items (both meaning and reading answered)
+    private var completedItemCount: Int {
+        reviewItems.filter { $0.isComplete }.count
+    }
+
+    /// Items remaining in the queue
+    private var queueCount: Int {
+        reviewItems.count - completedItemCount
+    }
+
     var body: some View {
         Group {
             if isLoading {
@@ -113,9 +171,13 @@ struct ReviewSessionView: View {
                     progress: progress,
                     onSubmit: checkAnswer,
                     onNext: nextQuestion,
-                    showWrongIndicator: showWrongIndicator,
+                    showWrongIndicator: $showWrongIndicator,
                     onCharacterTap: { showDetailSheet = true },
-                    dataManager: dataManager
+                    dataManager: dataManager,
+                    correctCount: correctCount,
+                    totalAnswered: totalAnswered,
+                    completedCount: completedItemCount,
+                    queueCount: queueCount
                 )
             } else {
                 SessionCompleteView(
@@ -126,11 +188,16 @@ struct ReviewSessionView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .toolbar(.hidden, for: .tabBar)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("End") {
                     showEndConfirmation = true
                 }
+                .foregroundStyle(.white)
+                .fontWeight(.medium)
             }
         }
         .confirmationDialog("End Session?", isPresented: $showEndConfirmation, titleVisibility: .visible) {
@@ -213,7 +280,10 @@ struct ReviewSessionView: View {
                         character: radical.displayCharacter,
                         meanings: radical.meanings.map { $0.meaning },
                         readings: [],  // Radicals have no readings
-                        wanikaniAssignmentId: progress.wanikaniAssignmentId
+                        wanikaniAssignmentId: progress.wanikaniAssignmentId,
+                        level: radical.level,
+                        srsStage: progress.srs,
+                        audioURL: nil  // Radicals have no audio
                     ))
                 }
             }
@@ -238,7 +308,10 @@ struct ReviewSessionView: View {
                         character: kanji.character,
                         meanings: kanji.meanings,
                         readings: kanji.allReadings,
-                        wanikaniAssignmentId: progress.wanikaniAssignmentId
+                        wanikaniAssignmentId: progress.wanikaniAssignmentId,
+                        level: kanji.level,
+                        srsStage: progress.srs,
+                        audioURL: nil  // Kanji typically don't have audio
                     ))
                 }
             }
@@ -263,13 +336,22 @@ struct ReviewSessionView: View {
                         character: vocab.characters,
                         meanings: vocab.allMeanings,
                         readings: vocab.allReadings,
-                        wanikaniAssignmentId: progress.wanikaniAssignmentId
+                        wanikaniAssignmentId: progress.wanikaniAssignmentId,
+                        level: vocab.level,
+                        srsStage: progress.srs,
+                        audioURL: nil  // TODO: Add audio URL from WaniKani data
                     ))
                 }
             }
         }
 
         print("✅ Total review items found: \(items.count)")
+
+        // Apply subject type filter if specified
+        if let filter = subjectTypeFilter {
+            items = items.filter { $0.subjectType == filter }
+            print("🔍 After filter (\(filter)): \(items.count) items")
+        }
 
         guard !items.isEmpty else {
             print("⚠️ No review items found, marking session complete")
@@ -520,6 +602,8 @@ struct ReviewSessionView: View {
     }
 }
 
+// MARK: - Tsurukame-Style Review Card View
+
 struct ReviewCardView: View {
     let item: ReviewItemState
     let questionType: ReviewQuestionType
@@ -529,209 +613,197 @@ struct ReviewCardView: View {
     let progress: Double
     let onSubmit: () -> Void
     let onNext: () -> Void
-    let showWrongIndicator: Bool  // Shows shake/red when wrong but allows retry
-    let onCharacterTap: () -> Void  // Tap character to view detail
+    @Binding var showWrongIndicator: Bool
+    let onCharacterTap: () -> Void
     let dataManager: DataManager
 
+    // Stats for the stats bar
+    let correctCount: Int
+    let totalAnswered: Int
+    let completedCount: Int
+    let queueCount: Int
+
     @FocusState private var isInputFocused: Bool
-    @State private var romajiBuffer = ""  // Raw romaji being typed
+    @State private var romajiBuffer = ""
     @State private var shakeOffset: CGFloat = 0
+    @State private var showDetailPanel = false
+    @Environment(\.colorScheme) private var colorScheme
+
+    /// Soft background gradient - uses new web-app-inspired softer colors
+    private var backgroundGradient: [Color] {
+        colorScheme == .dark ? item.backgroundGradientDeep : item.backgroundGradientSoft
+    }
+
+    /// Character text color - uses subject-based colors in light mode, white in dark mode
+    private var characterColor: Color {
+        colorScheme == .dark ? .white : item.characterTextColor
+    }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Progress bar
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                    Rectangle()
-                        .fill(
+        ZStack {
+            // Dynamic background by subject type
+            LinearGradient(
+                colors: backgroundGradient,
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            .animation(.easeInOut(duration: 0.3), value: item.subjectType)
+
+            VStack(spacing: 0) {
+                // Thin white progress bar at very top
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        Rectangle()
+                            .fill(Color.white.opacity(0.3))
+                        Rectangle()
+                            .fill(Color.white)
+                            .frame(width: geometry.size.width * progress)
+                            .animation(.easeInOut(duration: 0.3), value: progress)
+                    }
+                }
+                .frame(height: 3)
+
+                // Stats bar
+                ReviewStatsBar(
+                    correctCount: correctCount,
+                    totalAnswered: totalAnswered,
+                    completedCount: completedCount,
+                    queueCount: queueCount
+                )
+
+                // Question type indicator with SRS dots
+                QuestionTypeIndicator(
+                    subjectType: item.subjectType,
+                    questionType: questionType,
+                    srsStage: item.srsStage
+                )
+
+                Spacer()
+
+                // Character - tappable to view detail
+                Button {
+                    HapticManager.light()
+                    onCharacterTap()
+                } label: {
+                    Text(item.character)
+                        .font(.system(size: dynamicFontSize(for: item.character)))
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                        .foregroundColor(characterColor)
+                        .shadow(color: .black.opacity(colorScheme == .dark ? 0.3 : 0.1), radius: 4, y: 2)
+                }
+                .buttonStyle(.plain)
+                .padding(.vertical, 30)
+
+                Spacer()
+
+                // Answer section - Glassmorphic card styling
+                VStack(spacing: 16) {
+                    if showResult && isCorrect {
+                        // Correct answer feedback - horizontal banner style
+                        HStack(spacing: 12) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 32))
+                                .foregroundStyle(.white)
+
+                            Text("Correct!")
+                                .font(.title2)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 24)
+                        .background(
                             LinearGradient(
-                                colors: [.purple, .pink],
+                                colors: [.green.opacity(0.9), .mint.opacity(0.9)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
-                        .frame(width: geometry.size.width * progress)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 40)
+                        .transition(.scale.combined(with: .opacity))
+                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showResult)
+                    } else {
+                        // Input area
+                        answerInputSection
+                    }
                 }
-            }
-            .frame(height: 4)
-
-            // Question type indicator
-            Text(questionType == .meaning ? "Meaning" : "Reading")
-                .font(.headline)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(questionType == .meaning ? Color.pink : Color.purple)
-
-            // Type badge
-            HStack {
-                Text(item.subjectType == .radical ? "Radical" :
-                     item.subjectType == .kanji ? "Kanji" : "Vocabulary")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .foregroundColor(.white)
-                    .background(
-                        item.subjectType == .radical ? Color.blue :
-                        item.subjectType == .kanji ? Color.purple : Color.green
-                    )
-                    .clipShape(Capsule())
-                Spacer()
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-
-            // Character - tappable to view detail
-            Button {
-                HapticManager.light()
-                onCharacterTap()
-            } label: {
-                Text(item.character)
-                    .font(.system(size: 120))
-                    .foregroundColor(.primary)
-            }
-            .buttonStyle(.plain)
-            .padding(.vertical, 40)
-
-            Spacer()
-
-            // Answer section with improved dark mode styling
-            VStack(spacing: 16) {
-                if showResult && isCorrect {
-                    // Show correct result - auto-advances after brief delay
-                    VStack(spacing: 12) {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 60))
-                            .foregroundStyle(.green)
-                            .transition(.scale.combined(with: .opacity))
-
-                        Text("Correct!")
-                            .font(.headline)
-                            .foregroundStyle(.green)
-                    }
-                    .padding()
-                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showResult)
-                } else {
-                    // Input field (also shown when wrong to allow retry)
-                    VStack(spacing: 8) {
-                        // Show correct answer when wrong (like Tsurukame)
-                        if showWrongIndicator {
-                            VStack(spacing: 4) {
-                                Text("Correct answer:")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                Text(questionType == .meaning ?
-                                     item.meanings.joined(separator: ", ") :
-                                     item.readings.joined(separator: ", "))
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(.red)
-                            }
-                            .padding(.bottom, 4)
-                        }
-
-                        if questionType == .reading {
-                            // Single-line input like Tsurukame:
-                            // Shows kana display with hidden romaji input underneath
-                            ZStack {
-                                // Kana display (what user sees)
-                                Text(RomajiConverter.convertForDisplay(romajiBuffer).isEmpty ? "ひらがなで入力..." : RomajiConverter.convertForDisplay(romajiBuffer))
-                                    .font(.title2)
-                                    .foregroundColor(RomajiConverter.convertForDisplay(romajiBuffer).isEmpty ? .gray.opacity(0.5) : .primary)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 50)
-                                    .background(showWrongIndicator ? Color.red.opacity(0.1) : Color(.systemBackground))
-                                    .cornerRadius(10)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(showWrongIndicator ? Color.red : isInputFocused ? Color.purple : Color.gray.opacity(0.3), lineWidth: showWrongIndicator ? 2 : isInputFocused ? 2 : 1)
-                                    )
-                                    .offset(x: shakeOffset)
-
-                                // Hidden romaji input (captures keyboard)
-                                TextField("", text: $romajiBuffer)
-                                    .opacity(0.01)  // Nearly invisible but still captures input
-                                    .autocapitalization(.none)
-                                    .autocorrectionDisabled()
-                                    .focused($isInputFocused)
-                                    .onSubmit {
-                                        // Use finalize to convert trailing 'n' to 'ん' on submit
-                                        userAnswer = RomajiConverter.finalize(romajiBuffer)
-                                        onSubmit()
-                                    }
-                                    .onChange(of: romajiBuffer) { _, _ in
-                                        userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
-                                    }
-                            }
-                            .padding(.horizontal)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                isInputFocused = true
-                            }
-                        } else {
-                            // For meanings: standard text input
-                            TextField("Enter meaning...", text: $userAnswer)
-                                .font(.title2)
-                                .multilineTextAlignment(.center)
-                                .autocapitalization(.none)
-                                .focused($isInputFocused)
-                                .onSubmit(onSubmit)
-                                .frame(height: 50)
-                                .padding(.horizontal, 8)
-                                .background(showWrongIndicator ? Color.red.opacity(0.1) : Color(.systemBackground))
-                                .cornerRadius(10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .stroke(showWrongIndicator ? Color.red : Color.gray.opacity(0.3), lineWidth: showWrongIndicator ? 2 : 1)
-                                )
-                                .offset(x: shakeOffset)
-                                .padding(.horizontal)
-                        }
-                    }
-
-                    Button("Submit") {
-                        if questionType == .reading {
-                            // Use finalize to convert trailing 'n' to 'ん' on submit
-                            userAnswer = RomajiConverter.finalize(romajiBuffer)
-                        }
-                        onSubmit()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(showWrongIndicator ? .orange : .purple)
-                    .disabled(questionType == .reading ? romajiBuffer.isEmpty : userAnswer.isEmpty)
-                    .padding()
-                }
-            }
-            .frame(maxHeight: 250)
-            .background(
-                // Glassmorphism for answer area
-                Color(.secondarySystemGroupedBackground)
-                    .overlay(
-                        // Subtle gradient overlay for visual interest
-                        LinearGradient(
-                            colors: [Color.purple.opacity(0.03), Color.clear],
-                            startPoint: .top,
-                            endPoint: .bottom
+                .frame(maxHeight: 280)
+                .background(
+                    // Glassmorphic card background
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .fill(colorScheme == .dark
+                            ? Color.white.opacity(0.05)
+                            : Color.white.opacity(0.7))
+                        .background(
+                            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                                .fill(.ultraThinMaterial)
                         )
+                        .shadow(color: .black.opacity(0.1), radius: 15, y: -5)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .stroke(Color.white.opacity(colorScheme == .dark ? 0.1 : 0.3), lineWidth: 1)
+                )
+            }
+
+            // Wrong answer detail panel (slides up from bottom)
+            if showDetailPanel {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            showDetailPanel = false
+                        }
+                    }
+
+                VStack {
+                    Spacer()
+
+                    SubjectDetailPanel(
+                        item: item,
+                        srsStage: item.srsStage,
+                        level: item.level,
+                        audioURL: item.audioURL,
+                        onContinue: {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                showDetailPanel = false
+                            }
+                            // Reset so next wrong answer triggers onChange again
+                            showWrongIndicator = false
+                        },
+                        onShowFullDetail: {
+                            showDetailPanel = false
+                            showWrongIndicator = false
+                            onCharacterTap()
+                        }
                     )
-            )
+                    .frame(maxHeight: UIScreen.main.bounds.height * 0.6)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+                .ignoresSafeArea(edges: .bottom)
+            }
         }
-        .background(Color(.systemBackground))
         .onAppear {
             isInputFocused = true
         }
         .onChange(of: userAnswer) { _, newValue in
-            // Reset romajiBuffer when userAnswer is cleared (next question)
             if newValue.isEmpty {
                 romajiBuffer = ""
             }
         }
         .onChange(of: showWrongIndicator) { _, isWrong in
-            // Shake animation when wrong
             if isWrong {
+                // Dismiss keyboard when wrong
+                isInputFocused = false
+                // Show detail panel when wrong
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    showDetailPanel = true
+                }
+                // Shake animation
                 withAnimation(.default.repeatCount(3, autoreverses: true).speed(6)) {
                     shakeOffset = 10
                 }
@@ -739,6 +811,142 @@ struct ReviewCardView: View {
                     shakeOffset = 0
                 }
             }
+        }
+    }
+
+    // MARK: - Answer Input Section
+
+    @ViewBuilder
+    private var answerInputSection: some View {
+        VStack(spacing: 12) {
+            // Removed redundant "Enter the reading" text - question type header is sufficient
+            Spacer()
+                .frame(height: 16)
+
+            if questionType == .reading {
+                // Kana input with romaji conversion - Glass styling
+                ZStack {
+                    Text(RomajiConverter.convertForDisplay(romajiBuffer).isEmpty
+                         ? "答え"
+                         : RomajiConverter.convertForDisplay(romajiBuffer))
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundColor(RomajiConverter.convertForDisplay(romajiBuffer).isEmpty
+                                       ? .gray.opacity(0.4)
+                                       : .primary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.5))
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(isInputFocused
+                                    ? subjectAccentColor.opacity(0.8)
+                                    : Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                        .offset(x: shakeOffset)
+
+                    TextField("", text: $romajiBuffer)
+                        .opacity(0.01)
+                        .autocapitalization(.none)
+                        .autocorrectionDisabled()
+                        .focused($isInputFocused)
+                        .onSubmit {
+                            userAnswer = RomajiConverter.finalize(romajiBuffer)
+                            onSubmit()
+                        }
+                        .onChange(of: romajiBuffer) { _, _ in
+                            userAnswer = RomajiConverter.convertForDisplay(romajiBuffer)
+                        }
+                }
+                .padding(.horizontal, 20)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    isInputFocused = true
+                }
+            } else {
+                // Meaning input - Glass styling
+                TextField("Answer", text: $userAnswer)
+                    .font(.system(size: 24, weight: .medium))
+                    .multilineTextAlignment(.center)
+                    .autocapitalization(.none)
+                    .focused($isInputFocused)
+                    .onSubmit(onSubmit)
+                    .frame(height: 56)
+                    .padding(.horizontal, 16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.5))
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isInputFocused
+                                ? subjectAccentColor.opacity(0.8)
+                                : Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .offset(x: shakeOffset)
+                    .padding(.horizontal, 20)
+            }
+
+            // Submit button - Glass styling with accent color
+            Button {
+                if questionType == .reading {
+                    userAnswer = RomajiConverter.finalize(romajiBuffer)
+                }
+                onSubmit()
+            } label: {
+                Text("Submit")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(isInputEmpty
+                                ? AnyShapeStyle(Color.gray.opacity(0.5))
+                                : AnyShapeStyle(LinearGradient(
+                                    colors: [subjectAccentColor, subjectAccentColor.opacity(0.8)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                  ))
+                            )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                    .shadow(color: isInputEmpty ? .clear : subjectAccentColor.opacity(0.3), radius: 8, y: 4)
+            }
+            .disabled(isInputEmpty)
+            .scaleEffect(isInputEmpty ? 1.0 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: isInputEmpty)
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+        }
+    }
+
+    private var isInputEmpty: Bool {
+        questionType == .reading ? romajiBuffer.isEmpty : userAnswer.isEmpty
+    }
+
+    private var subjectAccentColor: Color {
+        switch item.subjectType {
+        case .radical: return SubjectTypeColors.radicalPrimary
+        case .kanji: return SubjectTypeColors.kanjiPrimary
+        case .vocabulary: return SubjectTypeColors.vocabularyPrimary
+        }
+    }
+
+    /// Dynamic font size based on character count to prevent truncation
+    private func dynamicFontSize(for text: String) -> CGFloat {
+        switch text.count {
+        case 1: return 120
+        case 2: return 100
+        case 3: return 80
+        case 4: return 65
+        default: return 55
         }
     }
 }
@@ -849,6 +1057,357 @@ struct StatBox: View {
         .padding()
         .background(color.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// MARK: - Stats Bar Component
+
+/// Stats bar for review session showing accuracy, completed count, and queue remaining
+/// Styled like Tsurukame's review stats display
+struct ReviewStatsBar: View {
+    let correctCount: Int
+    let totalAnswered: Int
+    let completedCount: Int
+    let queueCount: Int
+
+    private var successRate: Int {
+        guard totalAnswered > 0 else { return 100 }
+        return Int(Double(correctCount) / Double(totalAnswered) * 100)
+    }
+
+    var body: some View {
+        HStack(spacing: 24) {
+            ReviewStatItem(
+                icon: "hand.thumbsup.fill",
+                value: "\(successRate)%",
+                color: successRate >= 80 ? .green : successRate >= 60 ? .yellow : .red
+            )
+            ReviewStatItem(
+                icon: "checkmark",
+                value: "\(completedCount)",
+                color: .white
+            )
+            ReviewStatItem(
+                icon: "tray.full.fill",
+                value: "\(queueCount)",
+                color: .white.opacity(0.8)
+            )
+        }
+        .font(.subheadline)
+        .fontWeight(.semibold)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+    }
+}
+
+private struct ReviewStatItem: View {
+    let icon: String
+    let value: String
+    let color: Color
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.caption)
+            Text(value)
+        }
+        .foregroundStyle(color)
+    }
+}
+
+// MARK: - SRS Progress Dots
+
+/// SRS progress indicator dots (like Tsurukame)
+struct SRSProgressDots: View {
+    let stage: SRSStage
+
+    private var dotCount: Int {
+        switch stage {
+        case .lesson: return 1
+        case .apprentice1, .apprentice2, .apprentice3, .apprentice4: return 4
+        case .guru1, .guru2: return 2
+        case .master, .enlightened, .burned: return 1
+        }
+    }
+
+    private var filledDots: Int {
+        switch stage {
+        case .lesson: return 0
+        case .apprentice1: return 1
+        case .apprentice2: return 2
+        case .apprentice3: return 3
+        case .apprentice4: return 4
+        case .guru1: return 1
+        case .guru2: return 2
+        case .master, .enlightened, .burned: return 1
+        }
+    }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<dotCount, id: \.self) { index in
+                Circle()
+                    .fill(index < filledDots ? stage.indicatorColor : Color.white.opacity(0.3))
+                    .frame(width: 8, height: 8)
+            }
+        }
+    }
+}
+
+// MARK: - Question Type Indicator
+
+/// Enhanced question type indicator showing "Kanji Reading" format with SRS dots
+/// Uses softer badge colors based on question type
+struct QuestionTypeIndicator: View {
+    let subjectType: ReviewSubjectType
+    let questionType: ReviewQuestionType
+    let srsStage: SRSStage?
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var subjectTypeText: String {
+        switch subjectType {
+        case .radical: return "Radical"
+        case .kanji: return "Kanji"
+        case .vocabulary: return "Vocabulary"
+        }
+    }
+
+    private var questionTypeText: String {
+        switch questionType {
+        case .meaning: return "Meaning"
+        case .reading: return "Reading"
+        }
+    }
+
+    /// Softer badge color based on question type
+    private var badgeColor: Color {
+        switch questionType {
+        case .meaning: return .purple
+        case .reading: return .green
+        }
+    }
+
+    /// Text color adapts to colorScheme
+    private var textColor: Color {
+        colorScheme == .dark ? .white : badgeColor.opacity(0.9)
+    }
+
+    var body: some View {
+        HStack {
+            Spacer()
+            // Question type badge with softer styling
+            Text("\(subjectTypeText) \(questionTypeText)")
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundStyle(colorScheme == .dark ? .white : .primary)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+                .background(
+                    Capsule()
+                        .fill(badgeColor.opacity(colorScheme == .dark ? 0.25 : 0.15))
+                )
+            Spacer()
+            if let stage = srsStage {
+                SRSProgressDots(stage: stage)
+                    .padding(.trailing, 4)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            Color.black.opacity(colorScheme == .dark ? 0.2 : 0.05)
+        )
+    }
+}
+
+// MARK: - Subject Detail Panel
+
+/// Detailed panel shown when user answers incorrectly (Tsurukame-style)
+struct SubjectDetailPanel: View {
+    let item: ReviewItemState
+    let srsStage: SRSStage
+    let level: Int
+    let audioURL: String?
+    let onContinue: () -> Void
+    let onShowFullDetail: () -> Void
+
+    @State private var audioPlayer: AVPlayer?
+    @State private var isPlayingAudio = false
+    @Environment(\.colorScheme) private var colorScheme
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Drag handle
+            Capsule()
+                .fill(Color.gray.opacity(0.4))
+                .frame(width: 40, height: 5)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Character header
+                    HStack {
+                        Text(item.character)
+                            .font(.system(size: 48))
+                            .foregroundColor(.primary)
+                        Spacer()
+                        if item.subjectType == .vocabulary, audioURL != nil {
+                            Button {
+                                playAudio()
+                            } label: {
+                                Image(systemName: isPlayingAudio ? "speaker.wave.3.fill" : "speaker.wave.2.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(subjectColor)
+                                    .padding(12)
+                                    .background(Circle().fill(subjectColor.opacity(0.15)))
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    Divider()
+
+                    // READING section
+                    if item.subjectType != .radical {
+                        DetailPanelSection(title: "READING", color: subjectColor) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(item.readings, id: \.self) { reading in
+                                    Text(reading)
+                                        .font(.title3)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                        }
+                    }
+
+                    // MEANING section
+                    DetailPanelSection(title: "MEANING", color: subjectColor) {
+                        Text(item.meanings.joined(separator: ", "))
+                            .font(.title3)
+                            .foregroundColor(.primary)
+                    }
+
+                    // Show all information button
+                    Button {
+                        onShowFullDetail()
+                    } label: {
+                        HStack {
+                            Image(systemName: "info.circle")
+                            Text("Show all information")
+                        }
+                        .font(.subheadline)
+                        .foregroundStyle(subjectColor)
+                    }
+                    .padding(.horizontal)
+
+                    Divider()
+
+                    // STATS section
+                    DetailPanelSection(title: "STATS", color: subjectColor) {
+                        VStack(spacing: 12) {
+                            DetailStatRow(label: "WaniKani Level", value: "\(level)")
+                            DetailStatRow(label: "SRS Stage", value: srsStage.name, color: srsStage.indicatorColor)
+                            DetailStatRow(label: "Status", value: srsProgressText)
+                        }
+                    }
+
+                    // Continue button
+                    Button {
+                        onContinue()
+                    } label: {
+                        Text("Continue")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(subjectColor)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
+                }
+                .padding(.top, 8)
+            }
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(colorScheme == .dark ? Color(.systemBackground) : .white)
+                .shadow(color: .black.opacity(0.2), radius: 20, y: -5)
+        )
+    }
+
+    private var subjectColor: Color {
+        switch item.subjectType {
+        case .radical: return SubjectTypeColors.radicalPrimary
+        case .kanji: return SubjectTypeColors.kanjiPrimary
+        case .vocabulary: return SubjectTypeColors.vocabularyPrimary
+        }
+    }
+
+    private var srsProgressText: String {
+        switch srsStage {
+        case .lesson: return "Not started"
+        case .apprentice1, .apprentice2, .apprentice3, .apprentice4: return "Learning"
+        case .guru1, .guru2: return "Confident"
+        case .master: return "Mastered"
+        case .enlightened: return "Nearly burned"
+        case .burned: return "Burned 🔥"
+        }
+    }
+
+    private func playAudio() {
+        guard let urlString = audioURL,
+              let url = URL(string: urlString) else { return }
+        isPlayingAudio = true
+        let playerItem = AVPlayerItem(url: url)
+        audioPlayer = AVPlayer(playerItem: playerItem)
+        audioPlayer?.play()
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: playerItem,
+            queue: .main
+        ) { _ in
+            isPlayingAudio = false
+        }
+        HapticManager.light()
+    }
+}
+
+private struct DetailPanelSection<Content: View>: View {
+    let title: String
+    let color: Color
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundStyle(color)
+                .tracking(1)
+            content
+        }
+        .padding(.horizontal)
+    }
+}
+
+private struct DetailStatRow: View {
+    let label: String
+    let value: String
+    var color: Color = .primary
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+            Spacer()
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundStyle(color)
+        }
     }
 }
 

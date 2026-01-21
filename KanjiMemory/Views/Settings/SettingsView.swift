@@ -90,6 +90,9 @@ struct SettingsView: View {
                     // Personal Interests section
                     interestsSection
 
+                    // Statistics section
+                    statisticsSection
+
                     // Subscription section
                     subscriptionSection
 
@@ -99,7 +102,8 @@ struct SettingsView: View {
                 .padding()
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Settings")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear { loadSettings() }
             .alert("Sign Out", isPresented: $showSignOutConfirmation) {
                 Button("Cancel", role: .cancel) { }
@@ -435,6 +439,29 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: - Statistics Section
+    private var statisticsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader(title: "Statistics", emoji: "📊")
+
+            NavigationLink(destination: StatisticsView()) {
+                HStack {
+                    Image(systemName: "chart.bar.fill")
+                        .foregroundColor(.purple)
+                    Text("Review Statistics")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                }
+                .padding()
+                .background(Color(.secondarySystemGroupedBackground))
+                .cornerRadius(16)
+            }
+        }
+    }
+
     // MARK: - Subscription Section
     private var subscriptionSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -581,8 +608,11 @@ struct SettingsView: View {
         fuzzyMatchingEnabled = reviewPrefs.fuzzyMatchingEnabled
         autoConvertKatakana = reviewPrefs.autoConvertKatakana
 
-        // Load theme
-        selectedTheme = settings.theme
+        // Theme: @AppStorage is the source of truth (not SwiftData)
+        // Only sync SwiftData → AppStorage on first launch if AppStorage is empty
+        // Otherwise, AppStorage takes precedence for immediate theme switching
+        // Note: We removed `selectedTheme = settings.theme` to prevent overwriting
+        // the user's theme preference from stale SwiftData values
     }
 
     private func saveTheme() {

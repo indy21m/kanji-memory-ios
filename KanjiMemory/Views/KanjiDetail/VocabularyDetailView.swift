@@ -13,7 +13,9 @@ struct VocabularyDetailView: View {
     @State private var meaningMnemonic: String = ""
     @State private var readingMnemonic: String = ""
     @State private var isGeneratingMnemonic = false
+    @State private var isGeneratingImage = false
     @State private var errorMessage: String?
+    @State private var remoteImages: [RemoteImage] = []
 
     private var progress: VocabularyProgress? {
         progressList.first { $0.vocabularyId == vocabulary.id }
@@ -279,6 +281,16 @@ struct VocabularyDetailView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color(.secondarySystemGroupedBackground))
                 )
+
+                // Images section
+                ImagesSection(
+                    character: vocabulary.characters,
+                    remoteImages: remoteImages,
+                    isGenerating: isGeneratingImage,
+                    isAuthenticated: authManager.isAuthenticated,
+                    onGenerateImage: generateImage,
+                    onRefresh: loadRemoteImages
+                )
             }
             .padding()
         }
@@ -297,6 +309,7 @@ struct VocabularyDetailView: View {
                 meaningMnemonic = progress.meaningMnemonic ?? ""
                 readingMnemonic = progress.readingMnemonic ?? ""
             }
+            loadRemoteImages()
         }
     }
 
@@ -356,6 +369,85 @@ struct VocabularyDetailView: View {
             modelContext.insert(newProgress)
         }
         try? modelContext.save()
+    }
+
+    private func generateImage() {
+        guard authManager.isAuthenticated else {
+            errorMessage = "Please sign in to generate images"
+            HapticManager.warning()
+            return
+        }
+
+        let mnemonic = meaningMnemonic.isEmpty ? readingMnemonic : meaningMnemonic
+        guard !mnemonic.isEmpty else {
+            errorMessage = "Please add a mnemonic first"
+            HapticManager.warning()
+            return
+        }
+
+        HapticManager.light()
+        isGeneratingImage = true
+        errorMessage = nil
+
+        Task {
+            do {
+                let prefs = settings?.aiPreferences ?? AIPreferences()
+
+                let imageUrl = try await APIService.shared.generateImage(
+                    character: vocabulary.characters,
+                    mnemonic: mnemonic,
+                    style: prefs.imageStyle
+                )
+
+                // Download and cache the image
+                let imageData = try await APIService.shared.downloadImage(from: imageUrl)
+
+                await MainActor.run {
+                    // Save to local cache
+                    let cachedImage = CachedImage(
+                        character: vocabulary.characters,
+                        imageData: imageData,
+                        isAIGenerated: true,
+                        prompt: mnemonic
+                    )
+                    modelContext.insert(cachedImage)
+                    try? modelContext.save()
+
+                    isGeneratingImage = false
+                    HapticManager.success()
+
+                    // Refresh remote images
+                    loadRemoteImages()
+                }
+            } catch let error as APIError {
+                await MainActor.run {
+                    errorMessage = error.errorDescription
+                    isGeneratingImage = false
+                    HapticManager.error()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isGeneratingImage = false
+                    HapticManager.error()
+                }
+            }
+        }
+    }
+
+    private func loadRemoteImages() {
+        guard authManager.isAuthenticated else { return }
+
+        Task {
+            do {
+                let images = try await APIService.shared.getImages(forCharacter: vocabulary.characters)
+                await MainActor.run {
+                    remoteImages = images
+                }
+            } catch {
+                print("Failed to load remote images: \(error)")
+            }
+        }
     }
 }
 

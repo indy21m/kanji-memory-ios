@@ -10,7 +10,9 @@ struct RadicalDetailView: View {
     @StateObject private var dataManager = DataManager.shared
     @State private var mnemonic: String = ""
     @State private var isGeneratingMnemonic = false
+    @State private var isGeneratingImage = false
     @State private var errorMessage: String?
+    @State private var remoteImages: [RemoteImage] = []
 
     private var progress: RadicalProgress? {
         progressList.first { $0.radicalId == radical.id }
@@ -163,6 +165,16 @@ struct RadicalDetailView: View {
                         .fill(Color(.secondarySystemGroupedBackground))
                 )
 
+                // Images section
+                ImagesSection(
+                    character: radical.displayCharacter,
+                    remoteImages: remoteImages,
+                    isGenerating: isGeneratingImage,
+                    isAuthenticated: authManager.isAuthenticated,
+                    onGenerateImage: generateImage,
+                    onRefresh: loadRemoteImages
+                )
+
                 // Related kanji section
                 if !relatedKanji.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
@@ -209,6 +221,7 @@ struct RadicalDetailView: View {
             if let progress = progress {
                 mnemonic = progress.mnemonic ?? ""
             }
+            loadRemoteImages()
         }
     }
 
@@ -263,6 +276,84 @@ struct RadicalDetailView: View {
             modelContext.insert(newProgress)
         }
         try? modelContext.save()
+    }
+
+    private func generateImage() {
+        guard authManager.isAuthenticated else {
+            errorMessage = "Please sign in to generate images"
+            HapticManager.warning()
+            return
+        }
+
+        guard !mnemonic.isEmpty else {
+            errorMessage = "Please add a mnemonic first"
+            HapticManager.warning()
+            return
+        }
+
+        HapticManager.light()
+        isGeneratingImage = true
+        errorMessage = nil
+
+        Task {
+            do {
+                let prefs = settings?.aiPreferences ?? AIPreferences()
+
+                let imageUrl = try await APIService.shared.generateImage(
+                    character: radical.displayCharacter,
+                    mnemonic: mnemonic,
+                    style: prefs.imageStyle
+                )
+
+                // Download and cache the image
+                let imageData = try await APIService.shared.downloadImage(from: imageUrl)
+
+                await MainActor.run {
+                    // Save to local cache
+                    let cachedImage = CachedImage(
+                        character: radical.displayCharacter,
+                        imageData: imageData,
+                        isAIGenerated: true,
+                        prompt: mnemonic
+                    )
+                    modelContext.insert(cachedImage)
+                    try? modelContext.save()
+
+                    isGeneratingImage = false
+                    HapticManager.success()
+
+                    // Refresh remote images
+                    loadRemoteImages()
+                }
+            } catch let error as APIError {
+                await MainActor.run {
+                    errorMessage = error.errorDescription
+                    isGeneratingImage = false
+                    HapticManager.error()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = error.localizedDescription
+                    isGeneratingImage = false
+                    HapticManager.error()
+                }
+            }
+        }
+    }
+
+    private func loadRemoteImages() {
+        guard authManager.isAuthenticated else { return }
+
+        Task {
+            do {
+                let images = try await APIService.shared.getImages(forCharacter: radical.displayCharacter)
+                await MainActor.run {
+                    remoteImages = images
+                }
+            } catch {
+                print("Failed to load remote images: \(error)")
+            }
+        }
     }
 }
 

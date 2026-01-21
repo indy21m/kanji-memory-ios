@@ -16,6 +16,16 @@ enum ReviewItemTypeFilter: String, CaseIterable {
         case .vocabulary: return .green
         }
     }
+
+    /// Convert to ReviewSubjectType for passing to ReviewSessionView
+    var asSubjectType: ReviewSubjectType? {
+        switch self {
+        case .all: return nil
+        case .radicals: return .radical
+        case .kanji: return .kanji
+        case .vocabulary: return .vocabulary
+        }
+    }
 }
 
 // Unified review item for display
@@ -116,10 +126,11 @@ struct ReviewsView: View {
                     // All items filtered out
                     noMatchingItemsView
                 } else {
-                    ReviewQueueView(items: filteredItems)
+                    ReviewQueueView(items: filteredItems, subjectTypeFilter: selectedTypeFilter.asSubjectType)
                 }
             }
-            .navigationTitle("Reviews")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear {
             refreshIfNeeded()
@@ -131,61 +142,59 @@ struct ReviewsView: View {
 
     // MARK: - Filter Bar
     private var reviewFilterBar: some View {
-        VStack(spacing: 8) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    // Type filters
-                    ForEach(ReviewItemTypeFilter.allCases, id: \.self) { filter in
-                        FilterChip(
-                            label: filterLabel(for: filter),
-                            isSelected: selectedTypeFilter == filter,
-                            color: filter.color
-                        ) {
-                            HapticManager.selection()
-                            selectedTypeFilter = filter
-                        }
-                    }
-
-                    Divider()
-                        .frame(height: 24)
-
-                    // Level filter menu
-                    Menu {
-                        Button("All Levels") {
-                            selectedLevelRange = nil
-                        }
-                        Divider()
-                        Button("Level 1-10") {
-                            selectedLevelRange = 1...10
-                        }
-                        Button("Level 11-20") {
-                            selectedLevelRange = 11...20
-                        }
-                        Button("Level 21-30") {
-                            selectedLevelRange = 21...30
-                        }
-                        Button("Level 31-40") {
-                            selectedLevelRange = 31...40
-                        }
-                        Button("Level 41-50") {
-                            selectedLevelRange = 41...50
-                        }
-                        Button("Level 51-60") {
-                            selectedLevelRange = 51...60
-                        }
-                    } label: {
-                        FilterChip(
-                            label: levelFilterLabel,
-                            isSelected: selectedLevelRange != nil,
-                            color: .purple
-                        ) {}
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                // Type filters
+                ForEach(ReviewItemTypeFilter.allCases, id: \.self) { filter in
+                    FilterChip(
+                        label: filterLabel(for: filter),
+                        isSelected: selectedTypeFilter == filter,
+                        color: filter.color
+                    ) {
+                        HapticManager.selection()
+                        selectedTypeFilter = filter
                     }
                 }
-                .padding(.horizontal)
+
+                Divider()
+                    .frame(height: 24)
+
+                // Level filter menu
+                Menu {
+                    Button("All Levels") {
+                        selectedLevelRange = nil
+                    }
+                    Divider()
+                    Button("Level 1-10") {
+                        selectedLevelRange = 1...10
+                    }
+                    Button("Level 11-20") {
+                        selectedLevelRange = 11...20
+                    }
+                    Button("Level 21-30") {
+                        selectedLevelRange = 21...30
+                    }
+                    Button("Level 31-40") {
+                        selectedLevelRange = 31...40
+                    }
+                    Button("Level 41-50") {
+                        selectedLevelRange = 41...50
+                    }
+                    Button("Level 51-60") {
+                        selectedLevelRange = 51...60
+                    }
+                } label: {
+                    FilterChip(
+                        label: levelFilterLabel,
+                        isSelected: selectedLevelRange != nil,
+                        color: .purple
+                    ) {}
+                }
             }
+            .padding(.horizontal, 16)
         }
-        .padding(.vertical, 8)
-        .background(Color(.secondarySystemGroupedBackground))
+        .padding(.vertical, 10)
+        .background(Color(.systemBackground))
     }
 
     private func filterLabel(for filter: ReviewItemTypeFilter) -> String {
@@ -350,15 +359,15 @@ struct EmptyReviewsView: View {
 
 struct ReviewQueueView: View {
     let items: [DueReviewItem]
+    let subjectTypeFilter: ReviewSubjectType?
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             // Stats header with glassmorphism
             HStack(spacing: 24) {
-                VStack {
+                VStack(spacing: 4) {
                     Text("\(items.count)")
-                        .font(.title)
-                        .fontWeight(.bold)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.purple, .pink],
@@ -372,34 +381,35 @@ struct ReviewQueueView: View {
                 }
 
                 Divider()
-                    .frame(height: 40)
+                    .frame(height: 36)
 
-                VStack {
+                VStack(spacing: 4) {
                     Text("0")
-                        .font(.title)
-                        .fontWeight(.bold)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                     Text("Completed")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
-            .padding()
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 16)
+                RoundedRectangle(cornerRadius: 14)
                     .fill(.ultraThinMaterial)
-                    .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+                    .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
             )
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
 
             // Start button
-            NavigationLink(destination: ReviewSessionView()) {
+            NavigationLink(destination: ReviewSessionView(subjectTypeFilter: subjectTypeFilter)) {
                 HStack {
                     Image(systemName: "play.fill")
                     Text("Start Reviews")
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
-                .padding()
+                .padding(.vertical, 14)
                 .background(
                     LinearGradient(
                         colors: [.purple, .indigo],
@@ -408,17 +418,17 @@ struct ReviewQueueView: View {
                     )
                 )
                 .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .clipShape(RoundedRectangle(cornerRadius: 14))
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
 
             // Queue list
             List {
                 ForEach(items.prefix(20)) { item in
-                    HStack {
+                    HStack(spacing: 10) {
                         Text(item.displayText)
                             .font(.title2)
-                            .frame(minWidth: 40)
+                            .frame(minWidth: 44, alignment: .leading)
 
                         // Type indicator
                         Text(item.typeIndicator)
@@ -426,7 +436,7 @@ struct ReviewQueueView: View {
                             .fontWeight(.bold)
                             .foregroundStyle(.white)
                             .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
+                            .padding(.vertical, 3)
                             .background(item.typeColor)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
 
@@ -434,7 +444,7 @@ struct ReviewQueueView: View {
 
                         SRSBadge(stage: item.srsStage)
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 2)
                 }
             }
             .listStyle(.plain)
