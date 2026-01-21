@@ -350,32 +350,45 @@ struct SettingsView: View {
 
             VStack(spacing: 0) {
                 Picker("Theme", selection: $selectedTheme) {
-                    HStack {
-                        Image(systemName: "iphone")
-                        Text("System")
-                    }
-                    .tag("system")
-
-                    HStack {
-                        Image(systemName: "sun.max.fill")
-                        Text("Light")
-                    }
-                    .tag("light")
-
-                    HStack {
-                        Image(systemName: "moon.fill")
-                        Text("Dark")
-                    }
-                    .tag("dark")
+                    Text("System").tag("system")
+                    Text("Light").tag("light")
+                    Text("Dark").tag("dark")
                 }
                 .pickerStyle(.segmented)
                 .padding()
-                .onChange(of: selectedTheme) { _, _ in
+                .onChange(of: selectedTheme) { _, newValue in
+                    print("Theme changed to: \(newValue)")
                     saveTheme()
                 }
+
+                // Show current selection with icon
+                HStack {
+                    Image(systemName: themeIcon)
+                        .foregroundStyle(.purple)
+                    Text(themeDescription)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.bottom, 12)
             }
             .background(Color(.secondarySystemGroupedBackground))
             .cornerRadius(16)
+        }
+    }
+
+    private var themeIcon: String {
+        switch selectedTheme {
+        case "light": return "sun.max.fill"
+        case "dark": return "moon.fill"
+        default: return "iphone"
+        }
+    }
+
+    private var themeDescription: String {
+        switch selectedTheme {
+        case "light": return "Always use light mode"
+        case "dark": return "Always use dark mode"
+        default: return "Follow system settings"
         }
     }
 
